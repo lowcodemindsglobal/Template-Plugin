@@ -2,8 +2,9 @@ package com.lowcodeminds.plugins.tags;
 
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
@@ -16,7 +17,7 @@ public abstract class Tag {
 	PluginContext context;
 	String tagName;
 	
-	private static final Logger LOG = LogManager.getLogger(Tag.class);
+	private static final Log LOG = LogFactory.getLog(Tag.class);
 	
 	public static String[] fieldNames;
 	public static String[] fieldValues;
