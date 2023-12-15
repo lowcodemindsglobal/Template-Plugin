@@ -6,5 +6,6 @@
 		<application-version min="23.2" />
 	</plugin-info>
 	<smart-service name="Document Template Automation" key="TagsReplacementDocAutomate" class="com.lowcodeminds.plugins.documentutilities.ReadAllFields" />
+	<smart-service name="Document Template Automation V2" key="TagsReplacementDocAutomateV2" class="com.lowcodeminds.plugins.documentutilities.TemplateSmartService" />
 
 </appian-plugin>
