@@ -72,6 +72,8 @@ public class ReadAllFields extends AppianSmartService {
 	private Long footerImage = null;
 
 	private Boolean isPDFGenerate;
+	private Boolean isGenerateHeaderImageAllPage;
+	private Boolean isGenerateFooterImageAllPage;
 	private String documentName;
 	private String columnText;
 	private Long saveInFolder;
@@ -355,9 +357,8 @@ public class ReadAllFields extends AppianSmartService {
 				// Every node has the NodeType property.
 
 				if (node.getNodeType() == NodeType.HEADER_FOOTER) {
-					
-					
-					//headerFooterFlag = true;
+
+					// headerFooterFlag = true;
 					count++;
 					System.out.println("count : " + count);
 					HeaderFooter headerFooter = (HeaderFooter) node;
@@ -367,11 +368,11 @@ public class ReadAllFields extends AppianSmartService {
 
 					}
 					if (headerFooterText.equals(headerFooter.getText().trim())) {
-						
+
 						headerFooterFlag = true;
 						// headerFooter.getText().replaceAll(headerFooterText, "");
-						System.out.println("headerFooter.getText() : "+headerFooter.getText());
-						System.out.println("count : "+count);
+						System.out.println("headerFooter.getText() : " + headerFooter.getText());
+						System.out.println("count : " + count);
 					}
 				}
 //				switch (node.getNodeType()) {
@@ -412,16 +413,18 @@ public class ReadAllFields extends AppianSmartService {
 				// pageSetup.setHeaderDistance(45);
 
 				builder.moveToHeaderFooter(HeaderFooterType.HEADER_FIRST);
-				//builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 10, RelativeVerticalPosition.PAGE, 10,650, 50, WrapType.THROUGH);
-				builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 10, RelativeVerticalPosition.PAGE, 10, 450, 40, WrapType.THROUGH);
+				// builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 10,
+				// RelativeVerticalPosition.PAGE, 10,650, 50, WrapType.THROUGH);
+				builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 10, RelativeVerticalPosition.PAGE, 10,
+						450, 40, WrapType.THROUGH);
 
 				builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
-
-//				builder.moveToHeaderFooter(HeaderFooterType.HEADER_PRIMARY);
-//				builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 0, RelativeVerticalPosition.PAGE, 0,
-//						0, 0, WrapType.THROUGH);
-//				builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
-
+				if (isGenerateHeaderImageAllPage == true) {
+					builder.moveToHeaderFooter(HeaderFooterType.HEADER_PRIMARY);
+					builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 0, RelativeVerticalPosition.PAGE,
+							0, 0, 0, WrapType.THROUGH);
+					builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
+				}
 //				Remove Header other than first Page
 
 				// removeHeader(doc);
@@ -433,15 +436,15 @@ public class ReadAllFields extends AppianSmartService {
 						772, 500, 50, WrapType.TOP_BOTTOM);
 				if (firstFooterText != "") {
 					builder.getFont().setSize(8);
-					//builder.write("\r\n");
+					// builder.write("\r\n");
 					builder.write(firstFooterText);
-					
+
 				}
-
-				builder.moveToHeaderFooter(HeaderFooterType.FOOTER_PRIMARY);
-				builder.insertImage(footerImage, RelativeHorizontalPosition.PAGE, 50, RelativeVerticalPosition.PAGE,
-						780, 500, 50, WrapType.TOP_BOTTOM);
-
+				if (isGenerateFooterImageAllPage == true) {
+					builder.moveToHeaderFooter(HeaderFooterType.FOOTER_PRIMARY);
+					builder.insertImage(footerImage, RelativeHorizontalPosition.PAGE, 50, RelativeVerticalPosition.PAGE,
+							780, 500, 50, WrapType.TOP_BOTTOM);
+				}
 				// removeHeader(doc);
 
 				// Header Footer End
@@ -546,7 +549,6 @@ public class ReadAllFields extends AppianSmartService {
 
 									// New
 
-									
 									org.jsoup.nodes.Document document = Jsoup.parse(tagsHXCheck.getString("value"));
 									Elements body = document.getElementsByTag("body");
 									fontSize = fontSize / 0.75;
@@ -846,6 +848,18 @@ public class ReadAllFields extends AppianSmartService {
 	@Name("IsPDFGenerate")
 	public void setIsPDFGenerate(Boolean val) {
 		this.isPDFGenerate = val;
+	}
+
+	@Input(required = Required.OPTIONAL, defaultValue = "false")
+	@Name("IsGenerateHeaderImageAllPage")
+	public void setIsGenerateHeaderImageAllPage(Boolean val) {
+		this.isGenerateHeaderImageAllPage = val;
+	}
+
+	@Input(required = Required.OPTIONAL, defaultValue = "false")
+	@Name("IsGenerateFooterImageAllPage")
+	public void setIsGenerateFooterImageAllPage(Boolean val) {
+		this.isGenerateFooterImageAllPage = val;
 	}
 
 	@Input(required = Required.ALWAYS)
