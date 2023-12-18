@@ -1,5 +1,6 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -52,15 +53,24 @@ public class BodyTemplate extends TemplatePage {
 
 		try {
 
-			String path = getIncudeDocument(documents);
+		//	String path = getIncudeDocument(documents);
+			InputStream ins = getIncludeStream(documents);
 			
-			if(empty(path)) {
+			/*if(empty(path)) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for BODY ");
 				return;
 			}else
 				LOG.info("FIELD_INCLUDE_TEXT  found for BODY : " + path);
+				*/
+			
+			if(ins !=null ) {
+			LOG.info("No FIELD_INCLUDE_TEXT  found for BODY ");
+			return;
+		   }else
+			LOG.info("FIELD_INCLUDE_TEXT  found for BODY : " );
+			
 
-			com.aspose.words.Document bodyDoc = new com.aspose.words.Document(path);
+			com.aspose.words.Document bodyDoc = new com.aspose.words.Document(ins);
 			bodyDoc.getMailMerge().execute(fieldNames, fieldValues);
 
 			bodyCreatedDocument = TemplateServices.createDocument(tempDocNameValue, tempDocExtensionValue, DocType.DOC,

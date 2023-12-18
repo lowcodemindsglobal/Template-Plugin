@@ -1,5 +1,7 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.InputStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,6 +51,7 @@ public class FooterImage extends TemplatePage {
 				Document footerImg = contentService.download(footerImage, ContentConstants.VERSION_CURRENT, false)[0];
 				footerImageFileName = footerImg.getInternalFilename();
 				LOG.debug("footerImageFileName : " + footerImageFileName);
+				InputStream is = getDocumentInputStream(footerImg);
 				
 				if (!empty(footerImageFileName)) {
 
@@ -91,7 +94,7 @@ public class FooterImage extends TemplatePage {
 						// Footer Part
 						pageSetup.setFooterDistance(63); // Newly Added
 						builder.moveToHeaderFooter(HeaderFooterType.FOOTER_FIRST);
-						builder.insertImage(footerImageFileName, RelativeHorizontalPosition.PAGE, 50,
+						builder.insertImage(is, RelativeHorizontalPosition.PAGE, 50,
 								RelativeVerticalPosition.PAGE, 772, 500, 50, WrapType.TOP_BOTTOM);
 
 						if (firstFooterText != "") {
@@ -100,7 +103,7 @@ public class FooterImage extends TemplatePage {
 
 						}
                       	builder.moveToHeaderFooter(HeaderFooterType.FOOTER_PRIMARY);
-						builder.insertImage(footerImageFileName, RelativeHorizontalPosition.PAGE, 50,
+						builder.insertImage(is, RelativeHorizontalPosition.PAGE, 50,
 								RelativeVerticalPosition.PAGE, 780, 500, 50, WrapType.TOP_BOTTOM);
 					}
 					else {

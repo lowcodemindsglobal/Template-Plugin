@@ -1,8 +1,11 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.InputStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.appiancorp.suiteapi.common.exceptions.AppianStorageException;
 import com.appiancorp.suiteapi.common.exceptions.InvalidVersionException;
 import com.appiancorp.suiteapi.content.ContentConstants;
 import com.appiancorp.suiteapi.content.ContentService;
@@ -129,6 +132,66 @@ public abstract class TemplatePage {
 
 		return matchDocPath;
 
+	}
+	
+	/**
+	 * Get the relevent HEADER include Document  from the document list.
+	 * @param documents
+	 * @return
+	 * @throws Exception
+	 * @throws InvalidContentException
+	 * @throws InvalidVersionException
+	 */
+	public InputStream getIncludeStream(Long[] documents)
+			throws Exception, InvalidContentException, InvalidVersionException {
+
+		String matchDocPath = "";
+		InputStream ins = null;
+		for (int i = 0; i < documents.length; i++) {
+
+			Document appianDoc = contentService.download(documents[i], ContentConstants.VERSION_CURRENT, false)[0];
+			LOG.debug(i + " : " + appianDoc.getDisplayName());
+			for (Field field : doc.getRange().getFields()) {
+				if (field.getType() == FieldType.FIELD_INCLUDE_TEXT) {
+					FieldIncludeText fIT = (FieldIncludeText) field;
+					if (fIT.getSourceFullName().contains(appianDoc.getDisplayName())) {
+						LOG.info("Found match : " + fIT.getSourceFullName());
+						//matchDocPath = appianDoc.getInternalFilename();
+						ins = getDocumentInputStream(appianDoc);
+						appianDocDisplayName = appianDoc.getDisplayName();
+						break;
+
+					}
+
+				}
+			}
+
+		}
+
+		return ins;
+
+	}
+	
+	public InputStream getDocumentInputStream(Document doc) throws Exception {
+		
+		InputStream ins = null;
+		if(doc !=null)
+			ins = doc.getInputStream();
+		return ins;
+		
+		
+	}
+	
+	public InputStream getDocumentInputStream(Long docId) throws Exception {
+		
+		Document appianDoc = contentService.download(docId, ContentConstants.VERSION_CURRENT, false)[0];
+		
+		InputStream ins = null;
+		if(appianDoc !=null)
+			ins = appianDoc.getInputStream();
+		return ins;
+		
+		
 	}
 
 }

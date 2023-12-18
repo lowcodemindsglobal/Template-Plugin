@@ -1,5 +1,6 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -54,6 +55,8 @@ public class FooterTemplate extends TemplatePage{
 		try {
 			
 			String path = getIncudeDocument(documents);
+			InputStream ins =getIncludeStream(documents);
+			
 			if(empty(path)) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for FOOTER ");
 				return;
@@ -61,7 +64,7 @@ public class FooterTemplate extends TemplatePage{
 			else
 				LOG.info(" FIELD_INCLUDE_TEXT  found for FOOTER :" + path);
 	
-			com.aspose.words.Document footerDoc = new com.aspose.words.Document(path);
+			com.aspose.words.Document footerDoc = new com.aspose.words.Document(ins);
 			footerDoc.getMailMerge().execute(fieldNames, fieldValues);
 			
 			footerCreatedDocument = TemplateServices.createDocument(tempDocNameValue, tempDocExtensionValue, DocType.DOC,context,tmpContentService);

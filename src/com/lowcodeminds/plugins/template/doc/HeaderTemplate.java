@@ -15,6 +15,9 @@ import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
 
+import java.io.File;
+import java.io.InputStream;
+
 public class HeaderTemplate extends TemplatePage {
 
 	public static String headerTagName = "HeaderTags";
@@ -54,20 +57,27 @@ public class HeaderTemplate extends TemplatePage {
 		 fieldValues = map.get(TemplateConstants.VALUES);
 
 		try {
+			InputStream ins = getIncludeStream(documents);
+			/*String path = getIncudeDocument(documents);
 			
-			String path = getIncudeDocument(documents);
 			if(empty(path)) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for HEADER ");
 				return;
 			}else
 				LOG.info(" FIELD_INCLUDE_TEXT  found for HEADER :" + path);
-			
-			com.aspose.words.Document headerdoc = new com.aspose.words.Document(path);
+			*/
+			com.aspose.words.Document headerdoc = new com.aspose.words.Document(ins);
 			headerdoc.getMailMerge().execute(fieldNames, fieldValues);
 			
 			headerCreatedDocument = TemplateServices.createDocument(tempDocNameValue, tempDocExtensionValue, DocType.DOC,context,tmpContentService);
-			String headerFilePath = tmpContentService.getInternalFilename(headerCreatedDocument);
-			headerdoc.save(headerFilePath);
+		//	String headerFilePath = tmpContentService.getInternalFilename(headerCreatedDocument);
+			
+			File tempFile = File.createTempFile(tempDocNameValue, tempDocExtensionValue);
+			String headerFilePath = tempFile.getAbsolutePath();
+			LOG.info("Temp file created at: " + tempFile.getAbsolutePath());
+
+			headerdoc.save(tempFile.getAbsolutePath());
+			//headerdoc.save(headerFilePath);
 			for (Field field : doc.getRange().getFields()) {
 				if (field.getType() == FieldType.FIELD_INCLUDE_TEXT) {
 					FieldIncludeText iT = (FieldIncludeText) field;

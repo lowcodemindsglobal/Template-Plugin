@@ -22,6 +22,8 @@ import com.aspose.words.WrapType;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
 
+import java.io.*;
+
 public class HeaderImage extends TemplatePage {
 
 
@@ -48,6 +50,7 @@ public class HeaderImage extends TemplatePage {
 
 				Document headerImg = contentService.download(headerImage, ContentConstants.VERSION_CURRENT, false)[0];
 				headerImageFileName = headerImg.getInternalFilename();
+				InputStream is = headerImg.getInputStream();
 				LOG.info("Processing  headerImageFileName Image" + headerImageFileName);
 				if (!empty(headerImageFileName)) {
 
@@ -73,7 +76,7 @@ public class HeaderImage extends TemplatePage {
 								headerFooterFlag = true;
 								// headerFooter.getText().replaceAll(headerFooterText, "");
 								LOG.debug("headerFooter.getText() : " + headerFooter.getText());
-														}
+							}
 						}
 
 					}
@@ -89,7 +92,7 @@ public class HeaderImage extends TemplatePage {
 						builder.moveToHeaderFooter(HeaderFooterType.HEADER_FIRST);
 						// builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 10,
 						// RelativeVerticalPosition.PAGE, 10,650, 50, WrapType.THROUGH);
-						builder.insertImage(headerImageFileName, RelativeHorizontalPosition.PAGE, 10,
+						builder.insertImage(is, RelativeHorizontalPosition.PAGE, 10,
 								RelativeVerticalPosition.PAGE, 10, 450, 40, WrapType.THROUGH);
 						
 						builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);

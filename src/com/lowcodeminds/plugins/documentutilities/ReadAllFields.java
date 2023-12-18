@@ -2,7 +2,8 @@ package com.lowcodeminds.plugins.documentutilities;
 
 import java.io.FileInputStream;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -50,6 +51,7 @@ import com.aspose.words.SaveFormat;
 import com.aspose.words.Section;
 import com.aspose.words.TableCollection;
 import com.aspose.words.WrapType;
+
 import com.appiancorp.suiteapi.content.DocumentInputStream;
 
 import org.jsoup.Jsoup;
@@ -59,7 +61,8 @@ import org.jsoup.select.Elements;
 @PaletteInfo(paletteCategory = "Appian Smart Services", palette = "Document Management")
 public class ReadAllFields extends AppianSmartService {
 
-	private static final Logger LOG = Logger.getLogger(ReadAllFields.class);
+	//private static final Logger LOG = Logger.getLogger(ReadAllFields.class);
+	private static final Log LOG = LogFactory.getLog(ReadAllFields.class);
 
 	@SuppressWarnings("unused")
 	private final SmartServiceContext smartServiceCtx;

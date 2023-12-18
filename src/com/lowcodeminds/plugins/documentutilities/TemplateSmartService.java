@@ -3,6 +3,7 @@ package com.lowcodeminds.plugins.documentutilities;
 import java.util.List;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.io.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import com.appiancorp.suiteapi.common.Name;
 import com.appiancorp.suiteapi.content.ContentConstants;
 import com.appiancorp.suiteapi.content.ContentService;
-
+import com.appiancorp.suiteapi.content.DocumentInputStream;
 import com.appiancorp.suiteapi.knowledge.Document;
 import com.appiancorp.suiteapi.knowledge.DocumentDataType;
 import com.appiancorp.suiteapi.knowledge.FolderDataType;
@@ -21,6 +22,7 @@ import com.appiancorp.suiteapi.process.framework.Required;
 import com.appiancorp.suiteapi.process.framework.SmartServiceContext;
 import com.appiancorp.suiteapi.process.palette.PaletteInfo;
 import com.aspose.words.License;
+import com.aspose.words.SaveFormat;
 import com.lowcodeminds.plugins.tags.DocTag;
 import com.lowcodeminds.plugins.tags.HTMLTag;
 import com.lowcodeminds.plugins.tags.Tag;
@@ -35,7 +37,7 @@ import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
 import com.lowcodeminds.plugins.tasks.*;
-
+import com.appiancorp.suiteapi.knowledge.Document;
 @PaletteInfo(paletteCategory = "Appian Smart Services", palette = "Document Management")
 public class TemplateSmartService extends AppianSmartService {
 
@@ -69,6 +71,7 @@ public class TemplateSmartService extends AppianSmartService {
 	String wordFileName;
 	
 	private static final Log LOG =  LogFactory.getLog(TemplateSmartService.class);
+	private DocumentInputStream inputStream;
 
 	@Input(required = Required.ALWAYS)
 	@Name("wordDocument")
@@ -187,11 +190,13 @@ public class TemplateSmartService extends AppianSmartService {
 			PluginContext context = createContext();
 
 			Document inputDocument = contentService.download(wordDocument, ContentConstants.VERSION_CURRENT, false)[0];
-			wordFileName = inputDocument.getInternalFilename();
+		//	wordFileName = inputDocument.getInternalFilename();
+			inputStream = inputDocument.getInputStream();
 
 			applyLicense(context);
 
-			com.aspose.words.Document doc = new com.aspose.words.Document(wordFileName);
+			//com.aspose.words.Document doc = new com.aspose.words.Document(wordFileName);
+			com.aspose.words.Document doc = new com.aspose.words.Document(inputStream);
 
 			List<TemplatePage> pages = new ArrayList<TemplatePage>();
 
@@ -239,9 +244,12 @@ public class TemplateSmartService extends AppianSmartService {
 
 			Long finalDocument = TemplateServices.createDocument(documentName, extensionValue, DocType.DOC, context,
 					contentService);
-			String filePath = contentService.getInternalFilename(finalDocument);
-			doc.save(filePath);
-			contentService.setSizeOfDocumentVersion(finalDocument);
+		//	String filePath = contentService.getInternalFilename(finalDocument);
+			
+			Document tmpDoc = contentService.download(finalDocument, ContentConstants.VERSION_CURRENT, false)[0];
+			OutputStream out = tmpDoc.getOutputStream();
+			doc.save(out,SaveFormat.DOC);
+		//	contentService.setSizeOfDocumentVersion(finalDocument);
 
 			// PDF Conversion
 			if (isPDFGenerate == true) {
@@ -290,10 +298,14 @@ public class TemplateSmartService extends AppianSmartService {
 
 		try {
 			Document licenseDoc = contentService.download(licenseFile, ContentConstants.VERSION_CURRENT, false)[0];
-			licenseFileName = licenseDoc.getInternalFilename();
-			FileInputStream fstream = new FileInputStream(licenseFileName);
+			//licenseFileName = licenseDoc.getInternalFilename();
+			InputStream ins = licenseDoc.getInputStream();
+			
+		//	FileInputStream fstream = new FileInputStream(licenseFileName);
+		//	FileInputStream fstream = new FileInputStream(ins);
 			License license = new License();
-			license.setLicense(fstream);
+			license.setLicense(ins);
+			
 		} catch (Exception e) {
 			
 			context.setErrorOccured(true);
