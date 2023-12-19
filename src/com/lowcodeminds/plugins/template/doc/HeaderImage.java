@@ -49,12 +49,9 @@ public class HeaderImage extends TemplatePage {
 			if (headerImage != null) {
 
 				Document headerImg = contentService.download(headerImage, ContentConstants.VERSION_CURRENT, false)[0];
-				headerImageFileName = headerImg.getInternalFilename();
 				InputStream is = headerImg.getInputStream();
-				LOG.info("Processing  headerImageFileName Image" + headerImageFileName);
-				if (!empty(headerImageFileName)) {
-
-					// Start Header Footer Flag Check
+				LOG.debug(" Start Processing  Header Image File ");
+				if (is !=null) {
 
 					Section section = doc.getFirstSection();
 					int count = 0;
@@ -96,6 +93,8 @@ public class HeaderImage extends TemplatePage {
 								RelativeVerticalPosition.PAGE, 10, 450, 40, WrapType.THROUGH);
 						
 						builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
+						
+						System.out.println("Header Image successfully Inserted");
 
 					}else {
 						LOG.info("Template doesn't  support header Image. No " + headerFooterText + " found ");

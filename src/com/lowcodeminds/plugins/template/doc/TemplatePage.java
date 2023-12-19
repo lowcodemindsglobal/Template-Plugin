@@ -1,5 +1,6 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
@@ -33,10 +34,11 @@ public abstract class TemplatePage {
 
 	public static String[] fieldNames;
 	public static String[] fieldValues;
-	
-	//Hold appian include TEXT file name
-	public String appianDocDisplayName = "";
-	
+
+	// Hold appian include TEXT file name
+	private String appianDocDisplayName = "";
+
+	public File tempFile;
 
 	public String getAppianDocDisplayName() {
 		return appianDocDisplayName;
@@ -76,76 +78,30 @@ public abstract class TemplatePage {
 
 	protected abstract void applyTemplating() throws SmartServiceException;
 
+	/** This is  to clean up temporary file resources */
 	public abstract void cleanUp();
 
-	public Document download(Long[] document) throws TemplateException {
-
-		Document doc = null;
-		for (int i = 0; i < document.length; i++) {
-			try {
-				doc = contentService.download(document[i], ContentConstants.VERSION_CURRENT, false)[0];
-			} catch (Exception e) {
-				throw new TemplateException(context, e);
-			}
-		}
-
-		return doc;
-
-	}
 
 	public static boolean empty(final String s) {
 		// Null-safe, short-circuit evaluation.
 		return s == null || s.trim().isEmpty();
 	}
 
+
 	/**
-	 * Get the relevent HEADER include Document  from the document list.
+	 * This method is used to get the  inputStream  for matching  document name. This will compare the
+	 * include Text fileName in master document  against the given list {@code Long[] documents}
+	 * ex :{INCLUDETEXT "H:\\IncText\\PlotLet.doc"  \* MERGEFORMAT }
+	 * 
 	 * @param documents
 	 * @return
 	 * @throws Exception
 	 * @throws InvalidContentException
 	 * @throws InvalidVersionException
 	 */
-	public String getIncudeDocument(Long[] documents)
+	public InputStream getIncludeFileStream(Long[] documents)
 			throws Exception, InvalidContentException, InvalidVersionException {
 
-		String matchDocPath = "";
-		for (int i = 0; i < documents.length; i++) {
-
-			Document appianDoc = contentService.download(documents[i], ContentConstants.VERSION_CURRENT, false)[0];
-			LOG.debug(i + " : " + appianDoc.getDisplayName());
-			for (Field field : doc.getRange().getFields()) {
-				if (field.getType() == FieldType.FIELD_INCLUDE_TEXT) {
-					FieldIncludeText fIT = (FieldIncludeText) field;
-					if (fIT.getSourceFullName().contains(appianDoc.getDisplayName())) {
-						LOG.info("Found match : " + fIT.getSourceFullName());
-						matchDocPath = appianDoc.getInternalFilename();
-						appianDocDisplayName = appianDoc.getDisplayName();
-						break;
-
-					}
-
-				}
-			}
-
-		}
-
-		return matchDocPath;
-
-	}
-	
-	/**
-	 * Get the relevent HEADER include Document  from the document list.
-	 * @param documents
-	 * @return
-	 * @throws Exception
-	 * @throws InvalidContentException
-	 * @throws InvalidVersionException
-	 */
-	public InputStream getIncludeStream(Long[] documents)
-			throws Exception, InvalidContentException, InvalidVersionException {
-
-		String matchDocPath = "";
 		InputStream ins = null;
 		for (int i = 0; i < documents.length; i++) {
 
@@ -156,42 +112,45 @@ public abstract class TemplatePage {
 					FieldIncludeText fIT = (FieldIncludeText) field;
 					if (fIT.getSourceFullName().contains(appianDoc.getDisplayName())) {
 						LOG.info("Found match : " + fIT.getSourceFullName());
-						//matchDocPath = appianDoc.getInternalFilename();
 						ins = getDocumentInputStream(appianDoc);
 						appianDocDisplayName = appianDoc.getDisplayName();
 						break;
-
 					}
-
 				}
 			}
-
 		}
-
 		return ins;
-
 	}
-	
-	public InputStream getDocumentInputStream(Document doc) throws Exception {
-		
+
+	/**
+	 * This method is used to get inputStrem for Appian Document object
+	 * @param doc
+	 * @return
+	 * @throws Exception
+	 */
+	private InputStream getDocumentInputStream(Document doc) throws Exception {
 		InputStream ins = null;
-		if(doc !=null)
+		if (doc != null)
 			ins = doc.getInputStream();
 		return ins;
-		
-		
+
 	}
-	
+
+	/**
+	 * This method is used to get InputStream for a given appian document ID
+	 * 
+	 * @param docId - This is the appian document ID
+	 * @return - InputStrem
+	 * @throws Exception
+	 */
+
 	public InputStream getDocumentInputStream(Long docId) throws Exception {
-		
 		Document appianDoc = contentService.download(docId, ContentConstants.VERSION_CURRENT, false)[0];
-		
 		InputStream ins = null;
-		if(appianDoc !=null)
+		if (appianDoc != null)
 			ins = appianDoc.getInputStream();
 		return ins;
-		
-		
+
 	}
 
 }

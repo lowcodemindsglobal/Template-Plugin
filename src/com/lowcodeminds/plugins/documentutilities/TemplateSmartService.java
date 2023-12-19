@@ -1,10 +1,10 @@
 package com.lowcodeminds.plugins.documentutilities;
 
-import java.util.List;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.io.*;
+import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -12,6 +12,7 @@ import com.appiancorp.suiteapi.common.Name;
 import com.appiancorp.suiteapi.content.ContentConstants;
 import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.content.DocumentInputStream;
+import com.appiancorp.suiteapi.content.DocumentOutputStream;
 import com.appiancorp.suiteapi.knowledge.Document;
 import com.appiancorp.suiteapi.knowledge.DocumentDataType;
 import com.appiancorp.suiteapi.knowledge.FolderDataType;
@@ -26,6 +27,8 @@ import com.aspose.words.SaveFormat;
 import com.lowcodeminds.plugins.tags.DocTag;
 import com.lowcodeminds.plugins.tags.HTMLTag;
 import com.lowcodeminds.plugins.tags.Tag;
+import com.lowcodeminds.plugins.tasks.RowTextTask;
+import com.lowcodeminds.plugins.tasks.TemplateTasks;
 import com.lowcodeminds.plugins.template.doc.BodyTemplate;
 import com.lowcodeminds.plugins.template.doc.FooterImage;
 import com.lowcodeminds.plugins.template.doc.FooterTemplate;
@@ -36,8 +39,7 @@ import com.lowcodeminds.plugins.template.utils.DocType;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
-import com.lowcodeminds.plugins.tasks.*;
-import com.appiancorp.suiteapi.knowledge.Document;
+
 @PaletteInfo(paletteCategory = "Appian Smart Services", palette = "Document Management")
 public class TemplateSmartService extends AppianSmartService {
 
@@ -69,8 +71,8 @@ public class TemplateSmartService extends AppianSmartService {
 
 	String licenseFileName;
 	String wordFileName;
-	
-	private static final Log LOG =  LogFactory.getLog(TemplateSmartService.class);
+
+	private static final Log LOG = LogFactory.getLog(TemplateSmartService.class);
 	private DocumentInputStream inputStream;
 
 	@Input(required = Required.ALWAYS)
@@ -184,18 +186,15 @@ public class TemplateSmartService extends AppianSmartService {
 	@Override
 	public void run() throws SmartServiceException {
 
-	
 		try {
 
 			PluginContext context = createContext();
 
 			Document inputDocument = contentService.download(wordDocument, ContentConstants.VERSION_CURRENT, false)[0];
-		//	wordFileName = inputDocument.getInternalFilename();
 			inputStream = inputDocument.getInputStream();
 
 			applyLicense(context);
 
-			//com.aspose.words.Document doc = new com.aspose.words.Document(wordFileName);
 			com.aspose.words.Document doc = new com.aspose.words.Document(inputStream);
 
 			List<TemplatePage> pages = new ArrayList<TemplatePage>();
@@ -204,14 +203,14 @@ public class TemplateSmartService extends AppianSmartService {
 			pages.add(new HeaderTemplate(contentService, context, doc, tempcontentService));
 
 			// BodyTemplate
-			 pages.add(new BodyTemplate(contentService,context,doc, tempcontentService));
+			pages.add(new BodyTemplate(contentService, context, doc, tempcontentService));
 
 			// FooterTemplate
-			 pages.add(new FooterTemplate(contentService,context,doc, tempcontentService));
-			 
-			 pages.add(new HeaderImage(contentService,context,doc, tempcontentService));
-			 
-			 pages.add(new FooterImage(contentService,context,doc, tempcontentService));
+			pages.add(new FooterTemplate(contentService, context, doc, tempcontentService));
+
+			pages.add(new HeaderImage(contentService, context, doc, tempcontentService));
+
+			pages.add(new FooterImage(contentService, context, doc, tempcontentService));
 
 			// apply templating
 			for (TemplatePage t : pages) {
@@ -239,28 +238,37 @@ public class TemplateSmartService extends AppianSmartService {
 
 			// stop document processing
 			if (context.isErrorOccured()) {
+				LOG.error("Document Templating failed . ");
 				return;
 			}
 
 			Long finalDocument = TemplateServices.createDocument(documentName, extensionValue, DocType.DOC, context,
 					contentService);
-		//	String filePath = contentService.getInternalFilename(finalDocument);
-			
-			Document tmpDoc = contentService.download(finalDocument, ContentConstants.VERSION_CURRENT, false)[0];
-			OutputStream out = tmpDoc.getOutputStream();
-			doc.save(out,SaveFormat.DOC);
-		//	contentService.setSizeOfDocumentVersion(finalDocument);
 
+			Document tmpDoc = contentService.download(finalDocument, ContentConstants.VERSION_CURRENT, false)[0];
+			DocumentOutputStream out = tmpDoc.getOutputStream();
+			try (InputStream inputStream = TemplateServices.getDocumentStream(doc, SaveFormat.DOCX)) {
+				IOUtils.copy(inputStream, out);
+			}
+			
+			System.out.println("Doc format successfully generated");
 			// PDF Conversion
 			if (isPDFGenerate == true) {
+
 				Long createdPDFDocument = TemplateServices.createDocument(documentName, extensionPDFValue, DocType.PDF,
 						context, contentService);
-				String pdfFilePath = contentService.getInternalFilename(createdPDFDocument);
-				doc.save(pdfFilePath);
-				contentService.setSizeOfDocumentVersion(createdPDFDocument);
+				Document tmppdfDoc = contentService.download(createdPDFDocument, ContentConstants.VERSION_CURRENT,
+						false)[0];
+				DocumentOutputStream pdfOut = tmppdfDoc.getOutputStream();
+
+				try (InputStream inputStream = TemplateServices.getDocumentStream(doc, SaveFormat.PDF)) {
+					IOUtils.copy(inputStream, pdfOut);
+				}
+				
+				System.out.println("PDF format successfully generated");
 
 			}
-
+            LOG.info("################### Documents  generated successfully ########################");
 			for (TemplatePage t : pages) {
 				t.cleanUp();
 			}
@@ -294,28 +302,22 @@ public class TemplateSmartService extends AppianSmartService {
 
 	}
 
-	public void applyLicense(PluginContext context) throws  SmartServiceException {
+	public void applyLicense(PluginContext context) throws SmartServiceException {
 
 		try {
 			Document licenseDoc = contentService.download(licenseFile, ContentConstants.VERSION_CURRENT, false)[0];
-			//licenseFileName = licenseDoc.getInternalFilename();
 			InputStream ins = licenseDoc.getInputStream();
-			
-		//	FileInputStream fstream = new FileInputStream(licenseFileName);
-		//	FileInputStream fstream = new FileInputStream(ins);
 			License license = new License();
 			license.setLicense(ins);
-			
+
 		} catch (Exception e) {
-			
+
 			context.setErrorOccured(true);
 			context.setErrorMessage("Exception License ERROR Using Aspose : " + e.getMessage());
-			LOG.error("Aspose License issue " , e);
+			LOG.error("Aspose License issue ", e);
 			throw TemplateServices.createException(e, getClass());
 		}
 	}
-	
+
 
 }
-
-

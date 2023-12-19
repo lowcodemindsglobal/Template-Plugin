@@ -1,5 +1,6 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.aspose.words.Field;
 import com.aspose.words.FieldIncludeText;
 import com.aspose.words.FieldType;
-import com.lowcodeminds.plugins.template.utils.DocType;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
@@ -23,8 +23,6 @@ public class FooterTemplate extends TemplatePage{
     public final String tempDocNameValue = "tempDocument";
 	public final String tempDocExtensionValue = "doc";
 
-	
-	Long footerCreatedDocument;
 	private static final Log LOG = LogFactory.getLog(FooterTemplate.class);
 	
 	
@@ -38,7 +36,7 @@ public class FooterTemplate extends TemplatePage{
 	public void applyTemplating() throws SmartServiceException {
 		Long[] documents= context.getFooterDocuments();
 		if(documents == null ) {
-			LOG.info("No FooterDocuments is given.Stop processing FooterDocuments Template processing");
+			LOG.info("No Footer Documents are given.Stop processing Footer Document Template processing");
 			return;
 		}
 		
@@ -54,27 +52,33 @@ public class FooterTemplate extends TemplatePage{
 			
 		try {
 			
-			String path = getIncudeDocument(documents);
-			InputStream ins =getIncludeStream(documents);
+			InputStream ins = getIncludeFileStream(documents);
 			
-			if(empty(path)) {
+			if(ins == null) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for FOOTER ");
 				return;
 			}
 			else
-				LOG.info(" FIELD_INCLUDE_TEXT  found for FOOTER :" + path);
+				LOG.info(" FIELD_INCLUDE_TEXT  found for FOOTER :" );
 	
 			com.aspose.words.Document footerDoc = new com.aspose.words.Document(ins);
 			footerDoc.getMailMerge().execute(fieldNames, fieldValues);
+				
+			LOG.info("creating temparary file");
+			tempFile = File.createTempFile("tmp", ".doc");
+		//	tempFile.deleteOnExit();
 			
-			footerCreatedDocument = TemplateServices.createDocument(tempDocNameValue, tempDocExtensionValue, DocType.DOC,context,tmpContentService);
-			String headerFilePath = tmpContentService.getInternalFilename(footerCreatedDocument);
+			if(tempFile == null) {
+				LOG.info("Temp file is null");
+			}
+			String headerFilePath = tempFile.getAbsolutePath();
+					
 			footerDoc.save(headerFilePath);
 			for (Field field : doc.getRange().getFields()) {
 				if (field.getType() == FieldType.FIELD_INCLUDE_TEXT) {
 					FieldIncludeText iT = (FieldIncludeText) field;
 
-					if (!empty(headerFilePath) && iT.getSourceFullName().contains(appianDocDisplayName)) {
+					if (!empty(headerFilePath) && iT.getSourceFullName().contains(getAppianDocDisplayName())) {
 						iT.setSourceFullName(headerFilePath);
 					}
 					break;
@@ -97,8 +101,9 @@ public class FooterTemplate extends TemplatePage{
 	@Override
 	public void cleanUp() {
 		try {
-			if (footerCreatedDocument != null) {
-				contentService.delete(footerCreatedDocument, true);
+			
+			if(tempFile !=null) {
+				tempFile.delete();
 			}
 		}catch(Exception e) {
 			LOG.error("Exception in Footer Template clean up ");

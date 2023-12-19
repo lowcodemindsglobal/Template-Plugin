@@ -1,5 +1,7 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -10,13 +12,9 @@ import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.aspose.words.Field;
 import com.aspose.words.FieldIncludeText;
 import com.aspose.words.FieldType;
-import com.lowcodeminds.plugins.template.utils.DocType;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
-
-import java.io.File;
-import java.io.InputStream;
 
 public class HeaderTemplate extends TemplatePage {
 
@@ -25,8 +23,6 @@ public class HeaderTemplate extends TemplatePage {
 	public final String tempDocNameValue = "tempDocument";
 	public final String tempDocExtensionValue = "doc";
 
-	Long headerCreatedDocument;
-	
 	private static final Log LOG = LogFactory.getLog(HeaderTemplate.class);
 
 	public HeaderTemplate(ContentService contentService, PluginContext context, com.aspose.words.Document doc,
@@ -35,54 +31,65 @@ public class HeaderTemplate extends TemplatePage {
 	}
 
 	@Override
+	/**
+	 * This method return immediately if error reported in previous steps , if no
+	 * header documents and no json header tags are given.
+	 * Steps:
+	 *   1. Get InputStream  for header template
+	 *   2. Create Aspose document object 
+	 *   3. Execute mail merge
+	 *   4. Save document as temporary file
+	 *   5. Process main document  template INCLUDE  Text field 
+	 */
 	public void applyTemplating() throws SmartServiceException {
-		
-		
-		if(context.isErrorOccured()) {
+
+		if (context.isErrorOccured()) {
 			LOG.info("Header Template will not be processed  due to error");
 			return;
 		}
 		Long[] documents = context.getHeaderDocuments();
-		if(documents == null ) {
-			LOG.info("No HeaderDocuments is given.Stop processing HeaderDocuments Template processing");
+		if (documents == null) {
+			LOG.info("No Header Documents is given.Stop processing HeaderDocuments Template processing");
 			return;
 		}
-			
-		 Map<String , String[]> map = TemplateServices.extactTags(headerTagName,context);
-		 if(map.size()== 0) {
-			 LOG.info(" No json tag array found  for "+ headerTagName ); 
-			return ;
-		 }
-		 fieldNames = map.get(TemplateConstants.FIELDS);
-		 fieldValues = map.get(TemplateConstants.VALUES);
+
+		Map<String, String[]> map = TemplateServices.extactTags(headerTagName, context);
+		if (map.size() == 0) {
+			LOG.info(" No json tag array found  for " + headerTagName);
+			return;
+		}
+		fieldNames = map.get(TemplateConstants.FIELDS);
+		fieldValues = map.get(TemplateConstants.VALUES);
 
 		try {
-			InputStream ins = getIncludeStream(documents);
-			/*String path = getIncudeDocument(documents);
-			
-			if(empty(path)) {
+			InputStream ins = getIncludeFileStream(documents);
+			if (ins == null) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for HEADER ");
 				return;
-			}else
-				LOG.info(" FIELD_INCLUDE_TEXT  found for HEADER :" + path);
-			*/
+			} else
+				LOG.info(" FIELD_INCLUDE_TEXT  found for HEADER :");
+
 			com.aspose.words.Document headerdoc = new com.aspose.words.Document(ins);
 			headerdoc.getMailMerge().execute(fieldNames, fieldValues);
-			
-			headerCreatedDocument = TemplateServices.createDocument(tempDocNameValue, tempDocExtensionValue, DocType.DOC,context,tmpContentService);
-		//	String headerFilePath = tmpContentService.getInternalFilename(headerCreatedDocument);
-			
-			File tempFile = File.createTempFile(tempDocNameValue, tempDocExtensionValue);
-			String headerFilePath = tempFile.getAbsolutePath();
-			LOG.info("Temp file created at: " + tempFile.getAbsolutePath());
+			LOG.info("creating temporary file for header Document processing");
+			tempFile = File.createTempFile("tmp", ".doc");
+			tempFile.deleteOnExit();
 
+			if (tempFile == null) {
+				LOG.info("Fail to create Temporary File");
+				context.setErrorOccured(true);
+				context.setErrorMessage("Error when processing header template. Fail to create Temporary File");
+				return;
+			}
+			String headerFilePath = tempFile.getAbsolutePath();
+			LOG.debug("Temp file created at: " + tempFile.getAbsolutePath());
+			System.out.println("For Header Template Temp file created at: " + tempFile.getAbsolutePath());
 			headerdoc.save(tempFile.getAbsolutePath());
-			//headerdoc.save(headerFilePath);
 			for (Field field : doc.getRange().getFields()) {
 				if (field.getType() == FieldType.FIELD_INCLUDE_TEXT) {
 					FieldIncludeText iT = (FieldIncludeText) field;
 
-					if (!empty(headerFilePath) && iT.getSourceFullName().contains(appianDocDisplayName)) {
+					if (!empty(headerFilePath) && iT.getSourceFullName().contains(getAppianDocDisplayName())) {
 						iT.setSourceFullName(headerFilePath);
 					}
 					break;
@@ -91,28 +98,27 @@ public class HeaderTemplate extends TemplatePage {
 			}
 
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			context.setErrorOccured(true);
 			context.setErrorMessage("Error when processing header template");
-			LOG.error("Exception in Header Template processing " ,e);
+			LOG.error("Exception in Header Template processing ", e);
 			throw TemplateServices.createException(e, getClass());
 		}
 
 	}
 
-
 	@Override
 	public void cleanUp() {
 		try {
-			if (headerCreatedDocument != null) {
-				contentService.delete(headerCreatedDocument, true);
+			if (tempFile != null) {
+				tempFile.delete();
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			LOG.error("Exception in Header Template clean up ");
 			context.setErrorOccured(true);
 			context.setErrorMessage("Error when clening up header resources");
 		}
-		
+
 	}
 
 }

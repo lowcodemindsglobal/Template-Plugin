@@ -29,8 +29,7 @@ public class FooterImage extends TemplatePage {
 	private final String headerFooterText = "LCMHF";
 	private boolean headerFooterFlag = false;
 
-	Long headerCreatedDocument;
-	
+		
 	private static final Log LOG = LogFactory.getLog(FooterImage.class);
 
 	public FooterImage(ContentService contentService, PluginContext context, com.aspose.words.Document doc,
@@ -49,11 +48,9 @@ public class FooterImage extends TemplatePage {
 			if (footerImage != null) {
 
 				Document footerImg = contentService.download(footerImage, ContentConstants.VERSION_CURRENT, false)[0];
-				footerImageFileName = footerImg.getInternalFilename();
-				LOG.debug("footerImageFileName : " + footerImageFileName);
-				InputStream is = getDocumentInputStream(footerImg);
+				InputStream is = footerImg.getInputStream();
 				
-				if (!empty(footerImageFileName)) {
+				if (is !=null) {
 
 					// Start Header Footer Flag Check
 
@@ -105,6 +102,8 @@ public class FooterImage extends TemplatePage {
                       	builder.moveToHeaderFooter(HeaderFooterType.FOOTER_PRIMARY);
 						builder.insertImage(is, RelativeHorizontalPosition.PAGE, 50,
 								RelativeVerticalPosition.PAGE, 780, 500, 50, WrapType.TOP_BOTTOM);
+						
+						System.out.println("Footer Image successfully Inserted");
 					}
 					else {
 						LOG.info("Template doesn't  support footer Image. No " + headerFooterText + " found ");

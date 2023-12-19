@@ -1,5 +1,6 @@
 package com.lowcodeminds.plugins.template.doc;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.aspose.words.Field;
 import com.aspose.words.FieldIncludeText;
 import com.aspose.words.FieldType;
-import com.lowcodeminds.plugins.template.utils.DocType;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
@@ -20,13 +20,11 @@ public class BodyTemplate extends TemplatePage {
 
 	public static String embedBodyTagName = "EmbedBodyTags";
 
-	Long bodyCreatedDocument;
-
 	public final String tempDocNameValue = "tempDocument";
 	public final String tempDocExtensionValue = "doc";
 
-    private static final Log LOG = LogFactory.getLog(BodyTemplate.class);
-	
+	private static final Log LOG = LogFactory.getLog(BodyTemplate.class);
+
 	public BodyTemplate(ContentService contentService, PluginContext context, com.aspose.words.Document doc,
 			ContentService tmpContentService) {
 		super(contentService, context, doc, tmpContentService);
@@ -50,38 +48,32 @@ public class BodyTemplate extends TemplatePage {
 		fieldNames = map.get(TemplateConstants.FIELDS);
 		fieldValues = map.get(TemplateConstants.VALUES);
 
-
 		try {
 
-		//	String path = getIncudeDocument(documents);
-			InputStream ins = getIncludeStream(documents);
-			
-			/*if(empty(path)) {
+			InputStream ins = getIncludeFileStream(documents);
+			if (ins != null) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for BODY ");
 				return;
-			}else
-				LOG.info("FIELD_INCLUDE_TEXT  found for BODY : " + path);
-				*/
-			
-			if(ins !=null ) {
-			LOG.info("No FIELD_INCLUDE_TEXT  found for BODY ");
-			return;
-		   }else
-			LOG.info("FIELD_INCLUDE_TEXT  found for BODY : " );
-			
+			} else
+				LOG.info("FIELD_INCLUDE_TEXT  found for BODY : ");
 
 			com.aspose.words.Document bodyDoc = new com.aspose.words.Document(ins);
 			bodyDoc.getMailMerge().execute(fieldNames, fieldValues);
 
-			bodyCreatedDocument = TemplateServices.createDocument(tempDocNameValue, tempDocExtensionValue, DocType.DOC,
-					context, tmpContentService);
-			String tmpPath = tmpContentService.getInternalFilename(bodyCreatedDocument);
+			LOG.info("creating temporary file ");
+			tempFile = File.createTempFile("tmp", ".doc");
+			// tempFile.deleteOnExit();
+
+			if (tempFile == null) {
+				LOG.info("Temp file is null");
+			}
+			String tmpPath = tempFile.getAbsolutePath();
 			bodyDoc.save(tmpPath);
 			for (Field field : doc.getRange().getFields()) {
 				if (field.getType() == FieldType.FIELD_INCLUDE_TEXT) {
 					FieldIncludeText iT = (FieldIncludeText) field;
 
-					if (!empty(tmpPath) && iT.getSourceFullName().contains(appianDocDisplayName)) {
+					if (!empty(tmpPath) && iT.getSourceFullName().contains(getAppianDocDisplayName())) {
 						iT.setSourceFullName(tmpPath);
 					}
 					break;
@@ -92,9 +84,8 @@ public class BodyTemplate extends TemplatePage {
 		} catch (Exception e) {
 			context.setErrorOccured(true);
 			context.setErrorMessage("Error when processing body template");
-			LOG.error("Exception in Body Template processing " ,e);
+			LOG.error("Exception in Body Template processing ", e);
 			throw TemplateServices.createException(e, getClass());
-
 		}
 
 	}
@@ -103,13 +94,13 @@ public class BodyTemplate extends TemplatePage {
 
 	public void cleanUp() {
 		try {
-			if (bodyCreatedDocument != null) {
-				contentService.delete(bodyCreatedDocument, true);
+			if (tempFile != null) {
+				tempFile.delete();
 			}
 		} catch (Exception e) {
-			LOG.error("Exception in Body Template clean up " ,e);
+			LOG.error("Exception in Body Template clean up ", e);
 			LOG.error(e);
-		
+
 		}
 
 	}
