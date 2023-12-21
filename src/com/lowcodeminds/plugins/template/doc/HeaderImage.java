@@ -1,7 +1,6 @@
 package com.lowcodeminds.plugins.template.doc;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.content.ContentConstants;
 import com.appiancorp.suiteapi.content.ContentService;
@@ -32,7 +31,7 @@ public class HeaderImage extends TemplatePage {
 
 	Long headerCreatedDocument;
 
-	private static final Log LOG = LogFactory.getLog(HeaderImage.class);
+	private static final Logger LOG = Logger.getLogger(HeaderImage.class);
 
 	public HeaderImage(ContentService contentService, PluginContext context, com.aspose.words.Document doc,
 			ContentService tmpContentService) {

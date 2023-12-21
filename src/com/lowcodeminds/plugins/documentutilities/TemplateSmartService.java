@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.common.Name;
 import com.appiancorp.suiteapi.content.ContentConstants;
@@ -72,7 +71,7 @@ public class TemplateSmartService extends AppianSmartService {
 	String licenseFileName;
 	String wordFileName;
 
-	private static final Log LOG = LogFactory.getLog(TemplateSmartService.class);
+	private static final Logger LOG = Logger.getLogger(TemplateSmartService.class);
 	private DocumentInputStream inputStream;
 
 	@Input(required = Required.ALWAYS)

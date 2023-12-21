@@ -2,8 +2,7 @@ package com.lowcodeminds.plugins.template.doc;
 
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.content.ContentConstants;
 import com.appiancorp.suiteapi.content.ContentService;
@@ -30,7 +29,7 @@ public class FooterImage extends TemplatePage {
 	private boolean headerFooterFlag = false;
 
 		
-	private static final Log LOG = LogFactory.getLog(FooterImage.class);
+	private static final Logger LOG = Logger.getLogger(FooterImage.class);
 
 	public FooterImage(ContentService contentService, PluginContext context, com.aspose.words.Document doc,
 			ContentService tmpContentService) {

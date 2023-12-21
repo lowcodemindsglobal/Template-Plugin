@@ -3,10 +3,8 @@ package com.lowcodeminds.plugins.template.doc;
 import java.io.File;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
-import com.appiancorp.suiteapi.common.exceptions.AppianStorageException;
 import com.appiancorp.suiteapi.common.exceptions.InvalidVersionException;
 import com.appiancorp.suiteapi.content.ContentConstants;
 import com.appiancorp.suiteapi.content.ContentService;
@@ -17,7 +15,6 @@ import com.aspose.words.Field;
 import com.aspose.words.FieldIncludeText;
 import com.aspose.words.FieldType;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
-import com.lowcodeminds.plugins.template.utils.TemplateException;
 
 public abstract class TemplatePage {
 
@@ -48,7 +45,7 @@ public abstract class TemplatePage {
 		this.appianDocDisplayName = appianDocDisplayName;
 	}
 
-	private static final Log LOG = LogFactory.getLog(TemplatePage.class);
+	private static final Logger LOG = Logger.getLogger(TemplatePage.class);
 
 	TemplatePage(final ContentService contentService, final PluginContext context, com.aspose.words.Document doc,
 			final ContentService tmpContentService) {

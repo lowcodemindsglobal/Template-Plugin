@@ -3,9 +3,7 @@ package com.lowcodeminds.plugins.template.doc;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
@@ -23,7 +21,7 @@ public class BodyTemplate extends TemplatePage {
 	public final String tempDocNameValue = "tempDocument";
 	public final String tempDocExtensionValue = "doc";
 
-	private static final Log LOG = LogFactory.getLog(BodyTemplate.class);
+	private static final Logger LOG = Logger.getLogger(BodyTemplate.class);
 
 	public BodyTemplate(ContentService contentService, PluginContext context, com.aspose.words.Document doc,
 			ContentService tmpContentService) {

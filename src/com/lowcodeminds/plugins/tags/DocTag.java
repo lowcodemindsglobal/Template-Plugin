@@ -1,7 +1,7 @@
 package com.lowcodeminds.plugins.tags;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
@@ -9,8 +9,8 @@ import com.lowcodeminds.plugins.template.utils.TemplateServices;
 
 public class DocTag extends Tag {
 	
-	
-	private static final Log LOG = LogFactory.getLog(DocTag.class);
+
+	private static final Logger LOG = Logger.getLogger(Tag.class);
 	
 	public DocTag(com.aspose.words.Document doc,PluginContext context,String tagName){
 		super(doc, context,tagName);

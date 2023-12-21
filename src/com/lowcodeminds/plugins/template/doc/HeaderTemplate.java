@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
@@ -23,7 +22,7 @@ public class HeaderTemplate extends TemplatePage {
 	public final String tempDocNameValue = "tempDocument";
 	public final String tempDocExtensionValue = "doc";
 
-	private static final Log LOG = LogFactory.getLog(HeaderTemplate.class);
+	private static final Logger LOG = Logger.getLogger(HeaderTemplate.class);
 
 	public HeaderTemplate(ContentService contentService, PluginContext context, com.aspose.words.Document doc,
 			ContentService tmpContentService) {
@@ -73,7 +72,7 @@ public class HeaderTemplate extends TemplatePage {
 			headerdoc.getMailMerge().execute(fieldNames, fieldValues);
 			LOG.info("creating temporary file for header Document processing");
 			tempFile = File.createTempFile("tmp", ".doc");
-			tempFile.deleteOnExit();
+		
 
 			if (tempFile == null) {
 				LOG.info("Fail to create Temporary File");

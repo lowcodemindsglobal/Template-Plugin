@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
@@ -23,7 +22,7 @@ public class FooterTemplate extends TemplatePage{
     public final String tempDocNameValue = "tempDocument";
 	public final String tempDocExtensionValue = "doc";
 
-	private static final Log LOG = LogFactory.getLog(FooterTemplate.class);
+	private static final Logger LOG = Logger.getLogger(FooterTemplate.class);
 	
 	
 	public FooterTemplate(ContentService contentService, PluginContext context, com.aspose.words.Document doc,

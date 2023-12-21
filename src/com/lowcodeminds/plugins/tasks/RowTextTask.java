@@ -1,7 +1,6 @@
 package com.lowcodeminds.plugins.tasks;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
@@ -17,7 +16,7 @@ public class RowTextTask extends TemplateTasks {
 	com.aspose.words.Document doc;
 	PluginContext context;
 	
-	private static final Log LOG = LogFactory.getLog(RowTextTask.class);
+	private static final Logger LOG = Logger.getLogger(RowTextTask.class);
 
 	public RowTextTask(com.aspose.words.Document doc, PluginContext context) {
 		super(doc, context);

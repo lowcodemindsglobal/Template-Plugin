@@ -1,7 +1,6 @@
 package com.lowcodeminds.plugins.template.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.common.exceptions.AppianStorageException;
 import com.appiancorp.suiteapi.common.exceptions.InvalidVersionException;
@@ -11,7 +10,7 @@ import com.appiancorp.suiteapi.content.exceptions.InvalidContentException;
 
 public class TemplateException extends Exception {
 	
-	private static final Log LOG = LogFactory.getLog(TemplateException.class);
+	private static final Logger LOG = Logger.getLogger(TemplateException.class);
 
 	PluginContext context;
 

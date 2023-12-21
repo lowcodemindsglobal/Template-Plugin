@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,7 +24,7 @@ import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 
 public class TemplateServices {
 
-	private static final Log LOG = LogFactory.getLog(TemplateServices.class);
+	private static final Logger LOG = Logger.getLogger(TemplateServices.class);
 
 	public static Long createDocument(String documentName, String extension, DocType fileType, PluginContext context,
 			ContentService contentService) {

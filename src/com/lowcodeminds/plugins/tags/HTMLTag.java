@@ -1,8 +1,6 @@
 package com.lowcodeminds.plugins.tags;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -26,7 +24,7 @@ public class HTMLTag extends Tag {
 
 	private final String headerFooterText = "LCMHF";
 	
-	private static final Log LOG = LogFactory.getLog(HTMLTag.class);
+	private static final Logger LOG = Logger.getLogger(HTMLTag.class);
 
 	public HTMLTag(com.aspose.words.Document doc, PluginContext context, String tagName) {
 		super(doc, context, tagName);
