@@ -74,7 +74,7 @@ public class BodyTemplate extends TemplatePage {
 					if (!empty(tmpPath) && iT.getSourceFullName().contains(getAppianDocDisplayName())) {
 						iT.setSourceFullName(tmpPath);
 					}
-					break;
+					//break;
 				}
 
 			}

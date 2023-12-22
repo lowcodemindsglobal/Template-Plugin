@@ -80,7 +80,7 @@ public class FooterTemplate extends TemplatePage{
 					if (!empty(headerFilePath) && iT.getSourceFullName().contains(getAppianDocDisplayName())) {
 						iT.setSourceFullName(headerFilePath);
 					}
-					break;
+				//	break;
 				}
 
 			}
