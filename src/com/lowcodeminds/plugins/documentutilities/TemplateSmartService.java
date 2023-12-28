@@ -70,6 +70,9 @@ public class TemplateSmartService extends AppianSmartService {
 
 	String licenseFileName;
 	String wordFileName;
+	
+	private Boolean isGenerateHeaderImageAllPage;
+	private Boolean isGenerateFooterImageAllPage;
 
 	private static final Logger LOG = Logger.getLogger(TemplateSmartService.class);
 	private DocumentInputStream inputStream;
@@ -174,6 +177,19 @@ public class TemplateSmartService extends AppianSmartService {
 	public String getErrorMessage() {
 		return errorMessage;
 	}
+	
+	@Input(required = Required.OPTIONAL, defaultValue = "false")
+	@Name("IsGenerateHeaderImageAllPage")
+	public void setIsGenerateHeaderImageAllPage(Boolean val) {
+		this.isGenerateHeaderImageAllPage = val;
+	}
+
+	@Input(required = Required.OPTIONAL, defaultValue = "false")
+	@Name("IsGenerateFooterImageAllPage")
+	public void setIsGenerateFooterImageAllPage(Boolean val) {
+		this.isGenerateFooterImageAllPage = val;
+	}
+
 
 	public TemplateSmartService(SmartServiceContext smartServiceCtx, ContentService cs_, ContentService temp_cs) {
 		super();
@@ -184,6 +200,8 @@ public class TemplateSmartService extends AppianSmartService {
 
 	@Override
 	public void run() throws SmartServiceException {
+		
+		LOG.info("Started - >" +Thread.currentThread().getId());
 
 		try {
 
@@ -267,7 +285,7 @@ public class TemplateSmartService extends AppianSmartService {
 				System.out.println("PDF format successfully generated");
 
 			}
-            LOG.info("################### Documents  generated successfully ########################");
+            LOG.info("##### "+ Thread.currentThread().getId() + context.getDocumentName() + " document generated successfully  ########################");
 			for (TemplatePage t : pages) {
 				t.cleanUp();
 			}
@@ -297,6 +315,8 @@ public class TemplateSmartService extends AppianSmartService {
 		context.setSaveInFolder(saveInFolder);
 		context.setWordDocument(wordDocument);
 		context.setFooterImage(footerImage);
+		context.setGenerateFooterImageAllPage(isGenerateFooterImageAllPage);
+		context.setGenerateHeaderImageAllPage(isGenerateHeaderImageAllPage);
 		return context;
 
 	}

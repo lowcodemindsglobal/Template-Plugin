@@ -9,6 +9,8 @@ public class PluginContext {
 	private Long[] embedBodyDocuments;
 	private Long headerImage;
 	private Long footerImage;
+	
+	
 	private Long licenseFile;
 	private String documentName;
 	private String columnText;
@@ -16,6 +18,9 @@ public class PluginContext {
 	private Long saveInFolder;
 	private boolean errorOccured = false;
 	private String errorMessage;
+	private boolean isGenerateHeaderImageAllPage;
+	
+	private boolean isGenerateFooterImageAllPage;
 	
 	
 	private Long newGeneratedDocument;
@@ -118,6 +123,17 @@ public class PluginContext {
 		this.newPDFGeneratedDocument = newPDFGeneratedDocument;
 	}
 	
-	
+	public boolean isGenerateHeaderImageAllPage() {
+		return isGenerateHeaderImageAllPage;
+	}
+	public void setGenerateHeaderImageAllPage(boolean isGenerateHeaderImageAllPage) {
+		this.isGenerateHeaderImageAllPage = isGenerateHeaderImageAllPage;
+	}
+	public boolean isGenerateFooterImageAllPage() {
+		return isGenerateFooterImageAllPage;
+	}
+	public void setGenerateFooterImageAllPage(boolean isGenerateFooterImageAllPage) {
+		this.isGenerateFooterImageAllPage = isGenerateFooterImageAllPage;
+	}
 
 }

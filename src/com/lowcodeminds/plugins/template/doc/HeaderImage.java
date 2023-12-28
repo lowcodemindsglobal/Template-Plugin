@@ -42,6 +42,7 @@ public class HeaderImage extends TemplatePage {
 	protected void applyTemplating() throws SmartServiceException {
 
 		Long headerImage = context.getHeaderImage();
+		LOG.info("Header Image is  " +  headerImage);
 		String headerImageFileName;
 
 		try {
@@ -49,6 +50,7 @@ public class HeaderImage extends TemplatePage {
 
 				Document headerImg = contentService.download(headerImage, ContentConstants.VERSION_CURRENT, false)[0];
 				InputStream is = headerImg.getInputStream();
+				
 				LOG.debug(" Start Processing  Header Image File ");
 				if (is !=null) {
 
@@ -92,8 +94,14 @@ public class HeaderImage extends TemplatePage {
 								RelativeVerticalPosition.PAGE, 10, 450, 40, WrapType.THROUGH);
 						
 						builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
-						
-						System.out.println("Header Image successfully Inserted");
+						if (context.isGenerateHeaderImageAllPage() == true) {
+							InputStream insHeader = headerImg.getInputStream();
+							builder.moveToHeaderFooter(HeaderFooterType.HEADER_PRIMARY);
+							builder.insertImage(insHeader, RelativeHorizontalPosition.PAGE, 0, RelativeVerticalPosition.PAGE,
+									0, 0, 0, WrapType.THROUGH);
+							builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
+						}
+					
 
 					}else {
 						LOG.info("Template doesn't  support header Image. No " + headerFooterText + " found ");
