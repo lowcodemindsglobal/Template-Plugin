@@ -97,7 +97,6 @@ public class HeaderTemplate extends TemplatePage {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			context.setErrorOccured(true);
 			context.setErrorMessage("Error when processing header template");
 			LOG.error("Exception in Header Template processing ", e);

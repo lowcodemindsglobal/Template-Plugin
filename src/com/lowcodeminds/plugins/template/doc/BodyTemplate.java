@@ -58,7 +58,7 @@ public class BodyTemplate extends TemplatePage {
 			com.aspose.words.Document bodyDoc = new com.aspose.words.Document(ins);
 			bodyDoc.getMailMerge().execute(fieldNames, fieldValues);
 
-			LOG.info("creating temporary file ");
+			LOG.debug("creating temporary file ");
 			tempFile = File.createTempFile("tmp", ".doc");
 			// tempFile.deleteOnExit();
 

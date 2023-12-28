@@ -201,8 +201,8 @@ public class TemplateSmartService extends AppianSmartService {
 	@Override
 	public void run() throws SmartServiceException {
 		
-		LOG.info("Started - >" +Thread.currentThread().getId());
-
+		LOG.debug("Started Processing  - >" +Thread.currentThread().getId());
+		long startTime = System.currentTimeMillis();
 		try {
 
 			PluginContext context = createContext();
@@ -255,7 +255,7 @@ public class TemplateSmartService extends AppianSmartService {
 
 			// stop document processing
 			if (context.isErrorOccured()) {
-				LOG.error("Document Templating failed . ");
+				LOG.error("Document Templating failed while processing.Stop processing further ");
 				return;
 			}
 
@@ -267,8 +267,8 @@ public class TemplateSmartService extends AppianSmartService {
 			try (InputStream inputStream = TemplateServices.getDocumentStream(doc, SaveFormat.DOCX)) {
 				IOUtils.copy(inputStream, out);
 			}
-			
-			System.out.println("Doc format successfully generated");
+			//int docSize = doc.getBuiltInDocumentProperties().getBytes();
+			LOG.debug("Doc format successfully generated");
 			// PDF Conversion
 			if (isPDFGenerate == true) {
 
@@ -277,18 +277,29 @@ public class TemplateSmartService extends AppianSmartService {
 				Document tmppdfDoc = contentService.download(createdPDFDocument, ContentConstants.VERSION_CURRENT,
 						false)[0];
 				DocumentOutputStream pdfOut = tmppdfDoc.getOutputStream();
+				
 
 				try (InputStream inputStream = TemplateServices.getDocumentStream(doc, SaveFormat.PDF)) {
 					IOUtils.copy(inputStream, pdfOut);
 				}
 				
-				System.out.println("PDF format successfully generated");
+				LOG.debug("PDF format successfully generated");
 
 			}
-            LOG.info("##### "+ Thread.currentThread().getId() + context.getDocumentName() + " document generated successfully  ########################");
+			long endTime = System.currentTimeMillis();
+          
 			for (TemplatePage t : pages) {
 				t.cleanUp();
 			}
+			StringBuilder sb = new StringBuilder();
+			sb.append("################################################################" +"\n");
+			sb.append("Report Name     : " + context.getDocumentName()+"\n");
+			sb.append("Thread ID       : " + Thread.currentThread().getId()+"\n");
+			sb.append("Time Taken (ms) : " + (endTime - startTime) + " milliseconds" +"\n");
+		//	sb.append("Document Size   : " + docSize +"\n");
+			sb.append("################################################################");
+			
+			LOG.info(sb.toString());
 
 		} catch (Exception e) {
 			throw TemplateServices.createException(e, getClass());

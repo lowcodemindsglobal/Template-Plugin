@@ -99,19 +99,16 @@ public class FooterImage extends TemplatePage {
 							builder.write(firstFooterText);
 
 						}
-                   //   	builder.moveToHeaderFooter(HeaderFooterType.FOOTER_PRIMARY);
-					//	builder.insertImage(is, RelativeHorizontalPosition.PAGE, 50,
-					//			RelativeVerticalPosition.PAGE, 780, 500, 50, WrapType.TOP_BOTTOM);
-						
+                 						
 						if (context.isGenerateFooterImageAllPage() == true) {
 							InputStream insFooter = footerImg.getInputStream();
-							System.out.println("Applying  footer for all pages");
+							LOG.debug("Applying  footer for all pages");
 							builder.moveToHeaderFooter(HeaderFooterType.FOOTER_PRIMARY);
 							builder.insertImage(insFooter, RelativeHorizontalPosition.PAGE, 50, RelativeVerticalPosition.PAGE,
 									780, 500, 50, WrapType.TOP_BOTTOM);
 						}
 						
-						System.out.println("Footer Image successfully Inserted");
+						LOG.debug("Footer Image successfully Inserted");
 					}
 					else {
 						LOG.info("Template doesn't  support footer Image. No " + headerFooterText + " found ");

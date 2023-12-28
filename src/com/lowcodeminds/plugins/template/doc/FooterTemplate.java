@@ -101,11 +101,11 @@ public class FooterTemplate extends TemplatePage{
 	public void cleanUp() {
 		try {
 			
-			if(tempFile !=null) {
+			if(tempFile != null) {
 				tempFile.delete();
 			}
 		}catch(Exception e) {
-			LOG.error("Exception in Footer Template clean up ");
+			LOG.error("Exception in Footer Template clean up ",e);
 		}
 		
 	}
