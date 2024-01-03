@@ -5,7 +5,7 @@
 		<version>5.0.4</version>
 		<application-version min="23.2" />
 	</plugin-info>
-    <smart-service name="Document Template Automation" key="dta" class="com.lowcodeminds.plugins.documentutilities.ReadAllFields" /> 
+   <!-- <smart-service name="Document Template Automation" key="dta" class="com.lowcodeminds.plugins.documentutilities.ReadAllFields" /> -->
 	<smart-service name="DTAV3" key="TagsReplacementDocAutomateV3" class="com.lowcodeminds.plugins.documentutilities.TemplateSmartService" />
 
 </appian-plugin>

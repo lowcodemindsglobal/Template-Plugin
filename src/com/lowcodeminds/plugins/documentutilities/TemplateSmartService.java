@@ -267,8 +267,9 @@ public class TemplateSmartService extends AppianSmartService {
 			try (InputStream inputStream = TemplateServices.getDocumentStream(doc, SaveFormat.DOCX)) {
 				IOUtils.copy(inputStream, out);
 			}
+			newGeneratedDocument = context.getNewGeneratedDocument();
 			//int docSize = doc.getBuiltInDocumentProperties().getBytes();
-			LOG.debug("Doc format successfully generated");
+			LOG.info("Doc format successfully generated , newGeneratedDocument " + newGeneratedDocument);
 			// PDF Conversion
 			if (isPDFGenerate == true) {
 
@@ -282,8 +283,8 @@ public class TemplateSmartService extends AppianSmartService {
 				try (InputStream inputStream = TemplateServices.getDocumentStream(doc, SaveFormat.PDF)) {
 					IOUtils.copy(inputStream, pdfOut);
 				}
-				
-				LOG.debug("PDF format successfully generated");
+				 newPDFGeneratedDocument = context.getNewPDFGeneratedDocument();
+				LOG.info ("PDF format successfully generated newPDFGeneratedDocument : " + newPDFGeneratedDocument);
 
 			}
 			long endTime = System.currentTimeMillis();
@@ -302,6 +303,8 @@ public class TemplateSmartService extends AppianSmartService {
 			LOG.info(sb.toString());
 
 		} catch (Exception e) {
+			errorOccured =true;
+			errorMessage = e.getMessage();
 			throw TemplateServices.createException(e, getClass());
 		}
 
