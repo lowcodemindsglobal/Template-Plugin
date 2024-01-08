@@ -64,17 +64,21 @@ public class FooterImage extends TemplatePage {
 							// headerFooterFlag = true;
 							count++;
 							HeaderFooter headerFooter = (HeaderFooter) node;
+							firstFooterText = headerFooter.getText().trim();
 							if (count == 2) {
-								LOG.debug("headerFooter.getText() : " + headerFooter.getText());
-								firstFooterText = headerFooter.getText();
+							//	LOG.info("headerFooter.getText() : " + headerFooter.getText());
+							//	firstFooterText = headerFooter.getText();
 
 							}
-							LOG.debug(headerFooter.getText());
+							LOG.debug(count  + " :" + headerFooter.getText());
 							if (headerFooterText.equals(headerFooter.getText().trim())) {
-
 								headerFooterFlag = true;
-								LOG.debug("headerFooter.getText() : " + headerFooter.getText());
-								
+									
+							}
+							//Expected footer text is base template name and it is always  start with /
+							if(firstFooterText.startsWith("/")) {
+								firstFooterText = headerFooter.getText();
+								LOG.debug("Found Footer Text :" + firstFooterText);
 							}
 						}
 
@@ -97,6 +101,7 @@ public class FooterImage extends TemplatePage {
 						if (firstFooterText != "") {
 							builder.getFont().setSize(8);
 							builder.write(firstFooterText);
+							LOG.info("Footer text added "+ firstFooterText);
 
 						}
                  						
