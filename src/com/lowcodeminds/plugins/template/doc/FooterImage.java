@@ -107,6 +107,11 @@ public class FooterImage extends TemplatePage {
 							builder.insertImage(insFooter, RelativeHorizontalPosition.PAGE, 50, RelativeVerticalPosition.PAGE,
 									780, 500, 50, WrapType.TOP_BOTTOM);
 						}
+						else {
+							//HeaderFooter primaryHeader =  currentSection.getHeadersFooters().getByHeaderFooterType(HeaderFooterType.FOOTER_PRIMARY);
+							//if(primaryHeader !=null)
+							//	primaryHeader.getParagraphs().clear();
+						}
 						
 						LOG.debug("Footer Image successfully Inserted");
 					}

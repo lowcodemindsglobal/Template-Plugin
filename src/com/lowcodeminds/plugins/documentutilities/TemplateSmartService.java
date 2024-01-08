@@ -26,6 +26,7 @@ import com.aspose.words.SaveFormat;
 import com.lowcodeminds.plugins.tags.DocTag;
 import com.lowcodeminds.plugins.tags.HTMLTag;
 import com.lowcodeminds.plugins.tags.Tag;
+import com.lowcodeminds.plugins.tasks.RemoveHeaderText;
 import com.lowcodeminds.plugins.tasks.RowTextTask;
 import com.lowcodeminds.plugins.tasks.TemplateTasks;
 import com.lowcodeminds.plugins.template.doc.BodyTemplate;
@@ -206,7 +207,7 @@ public class TemplateSmartService extends AppianSmartService {
 		try {
 
 			PluginContext context = createContext();
-
+            long templateID = wordDocument;
 			Document inputDocument = contentService.download(wordDocument, ContentConstants.VERSION_CURRENT, false)[0];
 			inputStream = inputDocument.getInputStream();
 
@@ -248,6 +249,11 @@ public class TemplateSmartService extends AppianSmartService {
 			List<TemplateTasks> tasks = new ArrayList<TemplateTasks>();
 			TemplateTasks rawTask = new RowTextTask(doc, context);
 			tasks.add(rawTask);
+			
+			TemplateTasks headerTask = new RemoveHeaderText(doc, context);
+			tasks.add(headerTask);
+			
+			
 
 			for (TemplateTasks t : tasks) {
 				t.apply();
@@ -293,12 +299,13 @@ public class TemplateSmartService extends AppianSmartService {
 				t.cleanUp();
 			}
 			StringBuilder sb = new StringBuilder();
-			sb.append("################################################################" +"\n");
+			sb.append("---------------------------------------------------------------" +"\n");
 			sb.append("Report Name     : " + context.getDocumentName()+"\n");
+			sb.append("Template Used   : " + templateID+"\n");
 			sb.append("Thread ID       : " + Thread.currentThread().getId()+"\n");
-			sb.append("Time Taken (ms) : " + (endTime - startTime) + " milliseconds" +"\n");
+			sb.append("Time Taken(ms) : " + (endTime - startTime) + " milliseconds" +"\n");
 		//	sb.append("Document Size   : " + docSize +"\n");
-			sb.append("################################################################");
+			sb.append("-----------------------------------------------------------------");
 			
 			LOG.info(sb.toString());
 

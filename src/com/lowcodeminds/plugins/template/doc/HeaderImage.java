@@ -101,6 +101,11 @@ public class HeaderImage extends TemplatePage {
 									0, 0, 0, WrapType.THROUGH);
 							builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
 						}
+						else {
+						//	HeaderFooter primaryHeader =  currentSection.getHeadersFooters().getByHeaderFooterType(HeaderFooterType.HEADER_PRIMARY);
+						//	if(primaryHeader !=null)
+						//		primaryHeader.getParagraphs().clear();
+						}
 					
 
 					}else {
