@@ -90,8 +90,13 @@ public class HeaderImage extends TemplatePage {
 						builder.moveToHeaderFooter(HeaderFooterType.HEADER_FIRST);
 						// builder.insertImage(headerImage, RelativeHorizontalPosition.PAGE, 10,
 						// RelativeVerticalPosition.PAGE, 10,650, 50, WrapType.THROUGH);
+					    //  builder.insertImage(is, RelativeHorizontalPosition.PAGE, 10,
+						//	RelativeVerticalPosition.PAGE, 10, 450, 40, WrapType.THROUGH);
+						
 						builder.insertImage(is, RelativeHorizontalPosition.PAGE, 10,
-								RelativeVerticalPosition.PAGE, 10, 450, 40, WrapType.THROUGH);
+								RelativeVerticalPosition.PAGE, 0,0, 0, WrapType.THROUGH);
+		 
+						
 						
 						builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
 						if (context.isGenerateHeaderImageAllPage() == true) {
@@ -102,9 +107,9 @@ public class HeaderImage extends TemplatePage {
 							builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
 						}
 						else {
-						//	HeaderFooter primaryHeader =  currentSection.getHeadersFooters().getByHeaderFooterType(HeaderFooterType.HEADER_PRIMARY);
-						//	if(primaryHeader !=null)
-						//		primaryHeader.getParagraphs().clear();
+							HeaderFooter primaryHeader =  currentSection.getHeadersFooters().getByHeaderFooterType(HeaderFooterType.HEADER_PRIMARY);
+							if(primaryHeader != null)
+								primaryHeader.getParagraphs().clear();
 						}
 					
 
