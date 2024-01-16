@@ -43,6 +43,8 @@ public class FooterImage extends TemplatePage {
 		Long footerImage = context.getFooterImage();
 		String footerImageFileName;
 		String firstFooterText = "";
+		
+		String finalFooterText ="" ;
 
 		try {
 			if (footerImage != null) {
@@ -68,10 +70,10 @@ public class FooterImage extends TemplatePage {
 							//firstFooterText = headerFooter.getText().trim();
 							//if (count == 2) {
 							//	LOG.info("headerFooter.getText() : " + headerFooter.getText());
-							//	firstFooterText = headerFooter.getText();
+								firstFooterText = headerFooter.getText();
 
 							//}
-							LOG.debug(count  + " :" + headerFooter.getText());
+							LOG.info(count  + " :" + headerFooter.getText());
 							if (headerFooterText.equals(headerFooter.getText().trim())) {
 								headerFooterFlag = true;
 									
@@ -79,35 +81,52 @@ public class FooterImage extends TemplatePage {
 							//Expected footer text is base template name and it is always  start with /
 							if(firstFooterText.startsWith("/")) {
 								firstFooterText = headerFooter.getText().trim();
-								LOG.debug("Found Footer Text :" + firstFooterText);
+								LOG.info("Found Footer Text :" + firstFooterText);
 							}
 						}
 
 					}
 					// End Header Footer Flag Check
+					
+					String primaryFooterText ="" ;
+					for (Section s : doc.getSections()) {
+					      HeaderFooter footer = s.getHeadersFooters().getByHeaderFooterType(HeaderFooterType.FOOTER_PRIMARY);
+					     if (footer != null) {
+				    
+					    	LOG.info( "FOOTER :" +footer.getText());
+					    	primaryFooterText = footer.getText();
+					    	 
+					     }
+					}
+					  
+				   if(!primaryFooterText.startsWith("/")) {
+					   finalFooterText = firstFooterText;
+				   }
+				   else
+					   finalFooterText = primaryFooterText;
+					
 
 					if (headerFooterFlag) {
-						LOG.debug("Processing  footer Image");
+						LOG.info("start Processing  footer Image");
 						DocumentBuilder builder = new DocumentBuilder(doc);
 						Section currentSection = builder.getCurrentSection();
 						PageSetup pageSetup = currentSection.getPageSetup();
 						currentSection.getPageSetup().setDifferentFirstPageHeaderFooter(true);
 
 						// Footer Part
-						pageSetup.setFooterDistance(63); // Newly Added
+						pageSetup.setFooterDistance(73); // Newly Added
 						builder.moveToHeaderFooter(HeaderFooterType.FOOTER_FIRST);
 						builder.insertImage(is, RelativeHorizontalPosition.PAGE, 50,
 								RelativeVerticalPosition.PAGE, 772, 500, 50, WrapType.TOP_BOTTOM);
 
 						
 						if (firstFooterText != "") {
-							LOG.info("Remove firstFooterText and Add again ");
-							//Remove and add the footer Text again to avoid  footer text appearing twice
-							//Due to issues with some templates footer text is added twice.
-							doc.getRange().replace(firstFooterText, " ", new FindReplaceOptions());
+							LOG.info("Going to Add footer text ");
+							
+							doc.getRange().replace(finalFooterText, " ", new FindReplaceOptions());
 							builder.getFont().setSize(8);
-							builder.write(firstFooterText.trim());
-							LOG.info("Footer text added "+ firstFooterText);
+							builder.write(finalFooterText.trim());
+							LOG.info("Footer text added "+ finalFooterText);
 
 						}
                  						

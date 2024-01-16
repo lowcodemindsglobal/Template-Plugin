@@ -57,7 +57,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-@PaletteInfo(paletteCategory = "Appian Smart Services", palette = "Document Management")
+//@PaletteInfo(paletteCategory = "Appian Smart Services", palette = "Document Management")
+@Deprecated
+@PaletteInfo(paletteCategory = "#Deprecated#", palette = "#Deprecated#")
 public class ReadAllFields extends AppianSmartService {
 
 	private static final Logger LOG = Logger.getLogger(ReadAllFields.class);
@@ -124,8 +126,13 @@ public class ReadAllFields extends AppianSmartService {
 	private String firstFooterText = "";
 
 	public void run() throws SmartServiceException {
+		
+		LOG.error("This version of the mailpoller cannot work with the latest MS Graph APIs, use the latest smartservice");
+		errorOccured = true;
+		errorMessage = "This version of the mailpoller cannot work with the latest MS Graph APIs, use the latest smartservice";
+		return;
 
-		try {
+	/*	try {
 
 			Document inputDocument = contentService.download(wordDocument, ContentConstants.VERSION_CURRENT, false)[0];
 			wordFileName = inputDocument.getInternalFilename();
@@ -191,7 +198,7 @@ public class ReadAllFields extends AppianSmartService {
 			errorOccured = true;
 			errorMessage = "Exception Exception : " + e;
 			LOG.error("Exception Exception : " + e);
-		}
+		}*/
 	}
 
 	public String GetDocumentName(Long[] document, String wordFileName, String nameTag) {

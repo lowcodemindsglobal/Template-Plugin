@@ -107,9 +107,9 @@ public class HeaderImage extends TemplatePage {
 							builder.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
 						}
 						else {
-							HeaderFooter primaryHeader =  currentSection.getHeadersFooters().getByHeaderFooterType(HeaderFooterType.HEADER_PRIMARY);
-							if(primaryHeader != null)
-								primaryHeader.getParagraphs().clear();
+							//HeaderFooter primaryHeader =  currentSection.getHeadersFooters().getByHeaderFooterType(HeaderFooterType.HEADER_PRIMARY);
+							//if(primaryHeader != null)
+							//	primaryHeader.getParagraphs().clear();
 						}
 					
 
