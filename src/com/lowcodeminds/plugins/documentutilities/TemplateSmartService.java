@@ -204,6 +204,7 @@ public class TemplateSmartService extends AppianSmartService {
 		
 		LOG.debug("Started Processing  - >" +Thread.currentThread().getId());
 		long startTime = System.currentTimeMillis();
+		List<TemplatePage> pages = new ArrayList<TemplatePage>();
 		try {
 
 			PluginContext context = createContext();
@@ -214,8 +215,6 @@ public class TemplateSmartService extends AppianSmartService {
 			applyLicense(context);
 
 			com.aspose.words.Document doc = new com.aspose.words.Document(inputStream);
-
-			List<TemplatePage> pages = new ArrayList<TemplatePage>();
 
 			// HeaderTemplate
 			pages.add(new HeaderTemplate(contentService, context, doc, tempcontentService));
@@ -295,9 +294,7 @@ public class TemplateSmartService extends AppianSmartService {
 			}
 			long endTime = System.currentTimeMillis();
           
-			for (TemplatePage t : pages) {
-				t.cleanUp();
-			}
+			
 			StringBuilder sb = new StringBuilder();
 			sb.append("---------------------------------------------------------------" +"\n");
 			sb.append("Report Name     : " + context.getDocumentName()+"\n");
@@ -313,6 +310,10 @@ public class TemplateSmartService extends AppianSmartService {
 			errorOccured =true;
 			errorMessage = e.getMessage();
 			throw TemplateServices.createException(e, getClass());
+		}finally {
+			for (TemplatePage t : pages) {
+				t.cleanUp();
+			}
 		}
 
 	}
