@@ -58,6 +58,7 @@ public class TemplateServices {
 	public static Map<String, String[]> extactTags(String tagName, PluginContext context) {
 
 		String escapedHeaderTagsString = StringEscapeUtils.unescapeJava(context.getJsonFormatTags());
+		LOG.debug("json string ->" + escapedHeaderTagsString);
 		Map<String, String[]> values = new HashMap<>();
 		String[] fieldNames;
 		String[] fieldValues;
@@ -79,6 +80,7 @@ public class TemplateServices {
 			values.put(TemplateConstants.VALUES, fieldValues);
 		} catch (Exception e) {
 			LOG.info(tagName + " Not found in the Json string.");
+			LOG.error(e);
 		}
 
 		return values;
@@ -122,6 +124,24 @@ public class TemplateServices {
 		// Now reverse the steps to load the bytes back into a document object.
 		ByteArrayInputStream inStream = new ByteArrayInputStream(docBytes);
 		return inStream;
+
+	}
+	
+
+	/**
+	 * This method is used to get InputStream for a given appian document ID
+	 * 
+	 * @param docId - This is the appian document ID
+	 * @return - InputStrem
+	 * @throws Exception
+	 */
+
+	public static InputStream getDocumentInputStream(Long docId,ContentService contentService) throws Exception {
+		Document appianDoc = contentService.download(docId, ContentConstants.VERSION_CURRENT, false)[0];
+		InputStream ins = null;
+		if (appianDoc != null)
+			ins = appianDoc.getInputStream();
+		return ins;
 
 	}
 

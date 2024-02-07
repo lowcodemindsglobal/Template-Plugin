@@ -26,9 +26,11 @@ import com.aspose.words.SaveFormat;
 import com.lowcodeminds.plugins.tags.DocTag;
 import com.lowcodeminds.plugins.tags.HTMLTag;
 import com.lowcodeminds.plugins.tags.Tag;
+import com.lowcodeminds.plugins.tasks.AddEnclouserDocuemnts;
 import com.lowcodeminds.plugins.tasks.RemoveHeaderText;
 import com.lowcodeminds.plugins.tasks.RowTextTask;
 import com.lowcodeminds.plugins.tasks.TemplateTasks;
+import com.lowcodeminds.plugins.tasks.UpdateDocTask;
 import com.lowcodeminds.plugins.template.doc.BodyTemplate;
 import com.lowcodeminds.plugins.template.doc.FooterImage;
 import com.lowcodeminds.plugins.template.doc.FooterTemplate;
@@ -77,6 +79,16 @@ public class TemplateSmartService extends AppianSmartService {
 
 	private static final Logger LOG = Logger.getLogger(TemplateSmartService.class);
 	private DocumentInputStream inputStream;
+	
+	private Long[] encloserDocuments;
+	
+	
+	@Input(required = Required.OPTIONAL)
+	@Name("EncloserDocuments")
+	@DocumentDataType
+	public void setEncloserDocuments(Long[] encloserDocuments) {
+		this.encloserDocuments = encloserDocuments;
+	}
 
 	@Input(required = Required.ALWAYS)
 	@Name("wordDocument")
@@ -190,6 +202,8 @@ public class TemplateSmartService extends AppianSmartService {
 	public void setIsGenerateFooterImageAllPage(Boolean val) {
 		this.isGenerateFooterImageAllPage = val;
 	}
+	
+
 
 
 	public TemplateSmartService(SmartServiceContext smartServiceCtx, ContentService cs_, ContentService temp_cs) {
@@ -251,6 +265,11 @@ public class TemplateSmartService extends AppianSmartService {
 			
 			TemplateTasks headerTask = new RemoveHeaderText(doc, context);
 			tasks.add(headerTask);
+			TemplateTasks enc = new AddEnclouserDocuemnts(doc, context,contentService);
+			tasks.add(enc);
+			
+			TemplateTasks refreshTask = new UpdateDocTask(doc, context);
+			tasks.add(refreshTask);
 			
 			
 
@@ -339,6 +358,7 @@ public class TemplateSmartService extends AppianSmartService {
 		context.setFooterImage(footerImage);
 		context.setGenerateFooterImageAllPage(isGenerateFooterImageAllPage);
 		context.setGenerateHeaderImageAllPage(isGenerateHeaderImageAllPage);
+		context.setEncloserDocuments(encloserDocuments);
 		return context;
 
 	}

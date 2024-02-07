@@ -26,6 +26,8 @@ public class PluginContext {
 	private Long newGeneratedDocument;
 	private Long newPDFGeneratedDocument;
 	
+	private Long[] encloserDocuments;
+	
 	public Long getWordDocument() {
 		return wordDocument;
 	}
@@ -135,5 +137,13 @@ public class PluginContext {
 	public void setGenerateFooterImageAllPage(boolean isGenerateFooterImageAllPage) {
 		this.isGenerateFooterImageAllPage = isGenerateFooterImageAllPage;
 	}
+	public Long[] getEncloserDocuments() {
+		return encloserDocuments;
+	}
+	public void setEncloserDocuments(Long[] encloserDocuments) {
+		this.encloserDocuments = encloserDocuments;
+	}
+	
+	
 
 }

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
@@ -26,6 +27,7 @@ public abstract class Tag {
 		this.tagName = tagName;
 	}
 	
+
 	public  void  apply() throws SmartServiceException {
 		
 		if(context.isErrorOccured()) {
