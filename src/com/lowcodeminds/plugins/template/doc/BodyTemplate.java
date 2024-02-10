@@ -46,9 +46,8 @@ public class BodyTemplate extends TemplatePage {
 		fieldNames = map.get(TemplateConstants.FIELDS);
 		fieldValues = map.get(TemplateConstants.VALUES);
 
-		try {
-
-			InputStream ins = getIncludeFileStream(documents);
+		try (InputStream ins = getIncludeFileStream(documents);){
+			
 			if (ins != null) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for BODY ");
 				return;

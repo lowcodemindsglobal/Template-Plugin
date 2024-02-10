@@ -1,5 +1,6 @@
 package com.lowcodeminds.plugins.documentutilities;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,16 +74,15 @@ public class TemplateSmartService extends AppianSmartService {
 
 	String licenseFileName;
 	String wordFileName;
-	
+
 	private Boolean isGenerateHeaderImageAllPage;
 	private Boolean isGenerateFooterImageAllPage;
 
 	private static final Logger LOG = Logger.getLogger(TemplateSmartService.class);
 	private DocumentInputStream inputStream;
-	
+
 	private Long[] encloserDocuments;
-	
-	
+
 	@Input(required = Required.OPTIONAL)
 	@Name("EncloserDocuments")
 	@DocumentDataType
@@ -190,7 +190,7 @@ public class TemplateSmartService extends AppianSmartService {
 	public String getErrorMessage() {
 		return errorMessage;
 	}
-	
+
 	@Input(required = Required.OPTIONAL, defaultValue = "false")
 	@Name("IsGenerateHeaderImageAllPage")
 	public void setIsGenerateHeaderImageAllPage(Boolean val) {
@@ -202,9 +202,6 @@ public class TemplateSmartService extends AppianSmartService {
 	public void setIsGenerateFooterImageAllPage(Boolean val) {
 		this.isGenerateFooterImageAllPage = val;
 	}
-	
-
-
 
 	public TemplateSmartService(SmartServiceContext smartServiceCtx, ContentService cs_, ContentService temp_cs) {
 		super();
@@ -215,14 +212,14 @@ public class TemplateSmartService extends AppianSmartService {
 
 	@Override
 	public void run() throws SmartServiceException {
-		
-		LOG.debug("Started Processing  - >" +Thread.currentThread().getId());
+
+		LOG.debug("Started Processing  - >" + Thread.currentThread().getId());
 		long startTime = System.currentTimeMillis();
 		List<TemplatePage> pages = new ArrayList<TemplatePage>();
 		try {
 
 			PluginContext context = createContext();
-            long templateID = wordDocument;
+			long templateID = wordDocument;
 			Document inputDocument = contentService.download(wordDocument, ContentConstants.VERSION_CURRENT, false)[0];
 			inputStream = inputDocument.getInputStream();
 
@@ -262,16 +259,14 @@ public class TemplateSmartService extends AppianSmartService {
 			List<TemplateTasks> tasks = new ArrayList<TemplateTasks>();
 			TemplateTasks rawTask = new RowTextTask(doc, context);
 			tasks.add(rawTask);
-			
+
 			TemplateTasks headerTask = new RemoveHeaderText(doc, context);
 			tasks.add(headerTask);
-			TemplateTasks enc = new AddEnclouserDocuemnts(doc, context,contentService);
+			TemplateTasks enc = new AddEnclouserDocuemnts(doc, context, contentService);
 			tasks.add(enc);
-			
+
 			TemplateTasks refreshTask = new UpdateDocTask(doc, context);
 			tasks.add(refreshTask);
-			
-			
 
 			for (TemplateTasks t : tasks) {
 				t.apply();
@@ -292,7 +287,7 @@ public class TemplateSmartService extends AppianSmartService {
 				IOUtils.copy(inputStream, out);
 			}
 			newGeneratedDocument = context.getNewGeneratedDocument();
-			//int docSize = doc.getBuiltInDocumentProperties().getBytes();
+			// int docSize = doc.getBuiltInDocumentProperties().getBytes();
 			LOG.info("Doc format successfully generated , newGeneratedDocument " + newGeneratedDocument);
 			// PDF Conversion
 			if (isPDFGenerate == true) {
@@ -302,34 +297,32 @@ public class TemplateSmartService extends AppianSmartService {
 				Document tmppdfDoc = contentService.download(createdPDFDocument, ContentConstants.VERSION_CURRENT,
 						false)[0];
 				DocumentOutputStream pdfOut = tmppdfDoc.getOutputStream();
-				
 
 				try (InputStream inputStream = TemplateServices.getDocumentStream(doc, SaveFormat.PDF)) {
 					IOUtils.copy(inputStream, pdfOut);
 				}
-				 newPDFGeneratedDocument = context.getNewPDFGeneratedDocument();
-				LOG.info ("PDF format successfully generated newPDFGeneratedDocument : " + newPDFGeneratedDocument);
+				newPDFGeneratedDocument = context.getNewPDFGeneratedDocument();
+				LOG.info("PDF format successfully generated newPDFGeneratedDocument : " + newPDFGeneratedDocument);
 
 			}
 			long endTime = System.currentTimeMillis();
-          
-			
+
 			StringBuilder sb = new StringBuilder();
-			sb.append("---------------------------------------------------------------" +"\n");
-			sb.append("Report Name     : " + context.getDocumentName()+"\n");
-			sb.append("Template Used   : " + templateID+"\n");
-			sb.append("Thread ID       : " + Thread.currentThread().getId()+"\n");
-			sb.append("Time Taken(ms) : " + (endTime - startTime) + " milliseconds" +"\n");
-		//	sb.append("Document Size   : " + docSize +"\n");
+			sb.append("---------------------------------------------------------------" + "\n");
+			sb.append("Report Name     : " + context.getDocumentName() + "\n");
+			sb.append("Template Used   : " + templateID + "\n");
+			sb.append("Thread ID       : " + Thread.currentThread().getId() + "\n");
+			sb.append("Time Taken(ms) : " + (endTime - startTime) + " milliseconds" + "\n");
+			// sb.append("Document Size : " + docSize +"\n");
 			sb.append("-----------------------------------------------------------------");
-			
+
 			LOG.info(sb.toString());
 
 		} catch (Exception e) {
-			errorOccured =true;
+			errorOccured = true;
 			errorMessage = e.getMessage();
 			throw TemplateServices.createException(e, getClass());
-		}finally {
+		} finally {
 			for (TemplatePage t : pages) {
 				t.cleanUp();
 			}
@@ -365,9 +358,10 @@ public class TemplateSmartService extends AppianSmartService {
 
 	public void applyLicense(PluginContext context) throws SmartServiceException {
 
+		InputStream ins = null;
 		try {
 			Document licenseDoc = contentService.download(licenseFile, ContentConstants.VERSION_CURRENT, false)[0];
-			InputStream ins = licenseDoc.getInputStream();
+			ins = licenseDoc.getInputStream();
 			License license = new License();
 			license.setLicense(ins);
 
@@ -377,8 +371,13 @@ public class TemplateSmartService extends AppianSmartService {
 			context.setErrorMessage("Exception License ERROR Using Aspose : " + e.getMessage());
 			LOG.error("Aspose License issue ", e);
 			throw TemplateServices.createException(e, getClass());
+		} finally {
+			try {
+				ins.close();
+			} catch (IOException e) {
+				throw TemplateServices.createException(e, getClass());
+			}
 		}
 	}
-
 
 }

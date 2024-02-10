@@ -17,11 +17,11 @@ import com.aspose.words.DocumentBuilder;
 import com.aspose.words.ImportFormatMode;
 
 public class AddEnclouserDocuemnts extends TemplateTasks {
-	
+
 	private static final Logger LOG = Logger.getLogger(AddEnclouserDocuemnts.class);
-	
+
 	public static String embedBodyTagName = "EnclosureTags";
-	
+
 	public static String[] fieldNames;
 	public static String[] fieldValues;
 
@@ -32,60 +32,58 @@ public class AddEnclouserDocuemnts extends TemplateTasks {
 		this.contentService = contentService;
 
 	}
-	
 
 	public AddEnclouserDocuemnts(Document doc, PluginContext context) {
 		super(doc, context);
 		this.doc = doc;
 		this.context = context;
-		//this.contentService = contentService;
+		// this.contentService = contentService;
 
 	}
-
 
 	@Override
 	public void applyTemplate() throws SmartServiceException {
 		// TODO Auto-generated method stub
 
 		Long[] documents = context.getEncloserDocuments();
-		if(documents == null || documents.length == 0 ) {
-			LOG.info("No Enclosure documents attached" );
+		if (documents == null || documents.length == 0) {
+			LOG.info("No Enclosure documents attached");
 			return;
 		}
-		
+
 		Map<String, String[]> map = TemplateServices.extactTags(embedBodyTagName, context);
 		if (map.size() == 0) {
 			LOG.info("No json tag array found  for " + embedBodyTagName);
-			//return;
+			// return;
 		}
 
 		fieldNames = map.get(TemplateConstants.FIELDS);
 		fieldValues = map.get(TemplateConstants.VALUES);
-		
-		try {
-			for (Long id : documents) {
-				
-				LOG.info("Processing Enclosures  " + id);
-				InputStream in = TemplateServices.getDocumentInputStream(id, contentService);
+
+		for (Long id : documents) {
+
+			LOG.info("Processing Enclosures  " + id);
+			try (InputStream in = TemplateServices.getDocumentInputStream(id, contentService);) {
+
 				com.aspose.words.Document encloserDoc = new com.aspose.words.Document(in);
-				if(map.size() !=0)
-				    encloserDoc.getMailMerge().execute(fieldNames, fieldValues);
+				if (map.size() != 0)
+					encloserDoc.getMailMerge().execute(fieldNames, fieldValues);
 				DocumentBuilder builder = new DocumentBuilder(doc);
 
 				builder.moveToDocumentEnd();
 				builder.insertBreak(BreakType.PAGE_BREAK);
 				builder.insertDocument(encloserDoc, ImportFormatMode.KEEP_SOURCE_FORMATTING);
+			} catch (Exception e) {
+
+				context.setErrorOccured(true);
+				context.setErrorMessage("Error when Enclosing document Task");
+				LOG.error("Exception in Enclosing document  ", e);
+				throw TemplateServices.createException(e, getClass());
 
 			}
 
-		} catch (Exception e) {
-			
-			context.setErrorOccured(true);
-			context.setErrorMessage("Error when Enclosing document Task");
-			LOG.error("Exception in Enclosing document  ", e);
-			throw TemplateServices.createException(e, getClass());
-
 		}
+
 	}
 
 }

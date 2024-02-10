@@ -49,10 +49,8 @@ public class FooterTemplate extends TemplatePage{
 		 fieldValues = map.get(TemplateConstants.VALUES);
 
 			
-		try {
-			
-			InputStream ins = getIncludeFileStream(documents);
-			
+		try(InputStream ins = getIncludeFileStream(documents);) {
+					
 			if(ins == null) {
 				LOG.info("No FIELD_INCLUDE_TEXT  found for FOOTER ");
 				return;
