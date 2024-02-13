@@ -375,7 +375,7 @@ public class TemplateSmartService extends AppianSmartService {
 			try {
 				ins.close();
 			} catch (IOException e) {
-				throw TemplateServices.createException(e, getClass());
+				LOG.error("Error in closing input stream ", e);
 			}
 		}
 	}
