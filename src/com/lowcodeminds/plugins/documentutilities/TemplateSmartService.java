@@ -271,6 +271,7 @@ public class TemplateSmartService extends AppianSmartService {
 			for (TemplateTasks t : tasks) {
 				t.apply();
 			}
+			LOG.debug(context.printContext());
 
 			// stop document processing
 			if (context.isErrorOccured()) {

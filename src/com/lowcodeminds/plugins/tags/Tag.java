@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
@@ -18,8 +17,8 @@ public abstract class Tag {
 	
 	private static final Logger LOG = Logger.getLogger(Tag.class);
 	
-	public static String[] fieldNames;
-	public static String[] fieldValues;
+	public  String[] fieldNames;
+	public  String[] fieldValues;
 	
 	Tag(com.aspose.words.Document doc, PluginContext context,String tagName){
 		this.doc = doc;

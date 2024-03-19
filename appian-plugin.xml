@@ -2,7 +2,7 @@
 	<plugin-info>
 		<description> This smart service will automatically replace the all field tags in a word document based on JSON tags Structure and converts the document into docx format.</description>
 		<vendor name="LowCode Minds" url="https://www.lowcodeminds.com/" />
-		<version>5.0.3</version>
+		<version>5.0.4</version>
 		<application-version min="23.2" />
 	</plugin-info>
 <!--  <smart-service name="DTA" key="dta" class="com.lowcodeminds.plugins.documentutilities.ReadAllFields" /> -->
