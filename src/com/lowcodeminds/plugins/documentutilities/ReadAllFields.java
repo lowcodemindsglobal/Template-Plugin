@@ -84,7 +84,7 @@ public class ReadAllFields extends AppianSmartService {
 	public void run() throws SmartServiceException {
 		
 		errorOccured = true;
-		errorMessage = "This version of the Template Plugin deprecated,please use the latest smartservice";
+		errorMessage = "This version of the Template Plugin deprecated,please use the latest smartservice.";
 		return;
 
      }
