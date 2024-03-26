@@ -29,8 +29,8 @@ public abstract class TemplatePage {
 
 	public Long templateFile;
 
-	public static String[] fieldNames;
-	public static String[] fieldValues;
+	public  String[] fieldNames;
+	public  String[] fieldValues;
 
 	// Hold appian include TEXT file name
 	private String appianDocDisplayName = "";

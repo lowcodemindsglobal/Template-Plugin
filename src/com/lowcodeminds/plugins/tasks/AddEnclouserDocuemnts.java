@@ -22,8 +22,8 @@ public class AddEnclouserDocuemnts extends TemplateTasks {
 
 	public static String embedBodyTagName = "EnclosureTags";
 
-	public static String[] fieldNames;
-	public static String[] fieldValues;
+	public  String[] fieldNames;
+	public  String[] fieldValues;
 
 	public AddEnclouserDocuemnts(Document doc, PluginContext context, ContentService contentService) {
 		super(doc, context, contentService);
