@@ -2,7 +2,7 @@ package com.lowcodeminds.plugins.tasks;
 
 import java.io.InputStream;
 import java.util.Map;
-
+import com.aspose.words.*;
 import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.content.ContentService;
@@ -14,7 +14,10 @@ import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
 
 import com.aspose.words.DocumentBuilder;
+import com.aspose.words.HeaderFooter;
+import com.aspose.words.HeaderFooterType;
 import com.aspose.words.ImportFormatMode;
+import com.aspose.words.Section;
 
 public class AddEnclouserDocuemnts extends TemplateTasks {
 
@@ -69,10 +72,16 @@ public class AddEnclouserDocuemnts extends TemplateTasks {
 				if (map.size() != 0)
 					encloserDoc.getMailMerge().execute(fieldNames, fieldValues);
 				DocumentBuilder builder = new DocumentBuilder(doc);
-
+			
 				builder.moveToDocumentEnd();
-				builder.insertBreak(BreakType.PAGE_BREAK);
-				builder.insertDocument(encloserDoc, ImportFormatMode.KEEP_SOURCE_FORMATTING);
+			//	builder.insertBreak(BreakType.PAGE_BREAK);
+				ImportFormatOptions importFormatOptions = new ImportFormatOptions(); { 
+					   importFormatOptions.setIgnoreHeaderFooter(true);
+			 
+				}
+				encloserDoc.getFirstSection().getHeadersFooters().linkToPrevious(false);
+			    doc.appendDocument(encloserDoc, ImportFormatMode.KEEP_SOURCE_FORMATTING);
+			
 			} catch (Exception e) {
 
 				context.setErrorOccured(true);

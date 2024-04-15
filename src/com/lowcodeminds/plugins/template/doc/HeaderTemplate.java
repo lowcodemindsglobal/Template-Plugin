@@ -8,9 +8,11 @@ import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
+import com.aspose.words.DocumentBuilder;
 import com.aspose.words.Field;
 import com.aspose.words.FieldIncludeText;
 import com.aspose.words.FieldType;
+import com.aspose.words.ImportFormatMode;
 import com.lowcodeminds.plugins.template.utils.PluginContext;
 import com.lowcodeminds.plugins.template.utils.TemplateConstants;
 import com.lowcodeminds.plugins.template.utils.TemplateServices;
@@ -88,12 +90,22 @@ public class HeaderTemplate extends TemplatePage {
 					FieldIncludeText iT = (FieldIncludeText) field;
 
 					if (!empty(headerFilePath) && iT.getSourceFullName().contains(getAppianDocDisplayName())) {
+						
+						//this line was commented as this will cause to incorrect formatting. Inserted  document
+						//Formatting was ignored. So instead of setSourceFullName() we are now  inserting document. 
+						
 						iT.setSourceFullName(headerFilePath);
+						iT.remove();
 					}
 					//break;
 				}
 
 			}
+			//https://forum.aspose.com/t/text-style-change-after-setting-fieldincludetext-for-main-document/281572/5
+			//To keep the source  formatting 
+			DocumentBuilder builder = new DocumentBuilder(doc);	
+			builder.moveToDocumentStart();
+			builder.insertDocument(headerdoc,ImportFormatMode.KEEP_SOURCE_FORMATTING);
 
 		} catch (Exception e) {
 			context.setErrorOccured(true);
